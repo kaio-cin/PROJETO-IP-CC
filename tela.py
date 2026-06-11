@@ -4,8 +4,8 @@ from sys import exit
 
 pygame.init
 
-largura = 2040
-altura = 1400
+largura = 1550
+altura = 800
 
 
 tela = pygame.display.set_mode((largura, altura))
