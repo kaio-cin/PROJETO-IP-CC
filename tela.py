@@ -9,10 +9,10 @@ pygame.init()
 barulho_gag = pygame.mixer.Sound('gag.mp3') 
 barulho_gag.set_volume(1) 
 
-barulho_gaita = pygame.mixer.Sound('gaita.mp3') #mudar depois
+barulho_gaita = pygame.mixer.Sound('gaita.mp3') 
 barulho_gaita.set_volume(1) 
 
-barulho_fechei = pygame.mixer.Sound('smw_coin.wav') #mudar depois
+barulho_fechei = pygame.mixer.Sound('fechei.mp3') 
 barulho_fechei.set_volume(1) 
 
 largura = 1550
