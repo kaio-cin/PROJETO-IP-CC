@@ -20,7 +20,7 @@ altura = 800
 
 #nivel 1 - portas logicas
 qtd_portas = 0
-meta_portas = 3
+meta_portas = 4
 
 #nivel 2 - mux e demux
 qtd_combinacional = 0
