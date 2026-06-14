@@ -20,7 +20,7 @@ altura = 800
 
 #nivel 1 - portas logicas
 qtd_portas = 0
-meta_portas = 4
+meta_portas = 3
 
 #nivel 2 - mux e demux
 qtd_combinacional = 0
@@ -28,7 +28,7 @@ meta_combinacional = 3
 
 #nivel 3 - contador, registrador e flip-flop
 qtd_sequencial = 0
-meta_sequencial = 4
+meta_sequencial = 5
 
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")
