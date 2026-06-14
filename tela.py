@@ -115,7 +115,10 @@ coletaveis = [Coletavel(*posicao_coletavel_aleatoria(), "AND",         "and.png"
     Coletavel(*posicao_coletavel_aleatoria(), "DMUX",        "dmux.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Contador",    "contador.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Registrador", "registrador.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "flipflop.png"),]
+    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "flipflop.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "cervejaalema.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "gaitadefole.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "APS.png"),]
 
 #o * serve para desempacotar a tupla, invés de trazer ela assim (x,y) traz ela assim x,y (finalmente pode usar isso sem restrição das listas)
 
