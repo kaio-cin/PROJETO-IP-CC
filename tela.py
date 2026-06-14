@@ -6,13 +6,10 @@ from sys import exit
 
 pygame.init
 
-barulho_colisao = pygame.mixer.Sound('smw_coin.wav') 
-barulho_colisao.set_volume(1) 
-
-barulho_gag = pygame.mixer.Sound('smw_coin.wav') #mudar depois
+barulho_gag = pygame.mixer.Sound('gag.mp3') 
 barulho_gag.set_volume(1) 
 
-barulho_gaita = pygame.mixer.Sound('smw_coin.wav') #mudar depois
+barulho_gaita = pygame.mixer.Sound('gaita.mp3') #mudar depois
 barulho_gaita.set_volume(1) 
 
 barulho_fechei = pygame.mixer.Sound('smw_coin.wav') #mudar depois
