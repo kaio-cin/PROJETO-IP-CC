@@ -4,7 +4,7 @@ from random import randint
 from pygame.locals import*
 from sys import exit
 
-pygame.init
+pygame.init()
 
 barulho_gag = pygame.mixer.Sound('gag.mp3') 
 barulho_gag.set_volume(1) 
