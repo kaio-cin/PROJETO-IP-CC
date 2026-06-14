@@ -28,7 +28,7 @@ meta_combinacional = 3
 
 #nivel 3 - contador, registrador e flip-flop
 qtd_sequencial = 0
-meta_sequencial = 5
+meta_sequencial = 4
 
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")
