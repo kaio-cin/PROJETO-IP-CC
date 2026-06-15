@@ -143,7 +143,8 @@ def ocorreu_colisoes(personagem, coletaveis):
 def mostrar_quantidade_coletaveis(surf):
     i = 0
     for tipo, quantidade in inventario.items():
-        surf.blit(fonte.render(f'{tipo}: {quantidade}', True, (255, 255, 255)), (10, 20 * i))
+        if (tipo == 'Portas Lógicas') or (tipo == 'Combinacionais') or (tipo == 'FlipFlop'):
+            surf.blit(fonte.render(f'{tipo}: {quantidade}', True, (255, 255, 255)), (10, 20 * i))
         i += 1
 
 
