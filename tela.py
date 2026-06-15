@@ -1,7 +1,7 @@
 import pygame 
 import random
 from random import randint
-from pygame.locals import*
+from pygame.locals import *
 from sys import exit
 
 pygame.init()
