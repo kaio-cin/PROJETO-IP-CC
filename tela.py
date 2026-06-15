@@ -6,13 +6,13 @@ from sys import exit
 
 pygame.init()
 
-barulho_gag = pygame.mixer.Sound('gag.mp3') 
+barulho_gag = pygame.mixer.Sound('assets/sons/gag.mp3') 
 barulho_gag.set_volume(1) 
 
-barulho_gaita = pygame.mixer.Sound('gaita.mp3') 
+barulho_gaita = pygame.mixer.Sound('assets/sons/gaita.mp3') 
 barulho_gaita.set_volume(1) 
 
-barulho_fechei = pygame.mixer.Sound('fechei.mp3') 
+barulho_fechei = pygame.mixer.Sound('assets/sons/fechei.mp3') 
 barulho_fechei.set_volume(1) 
 
 largura = 1550
@@ -26,7 +26,7 @@ meta_portas = 3
 qtd_combinacional = 0
 meta_combinacional = 3
 
-#nivel 3 - contador, registrador e flip-flop
+#nivel 3 - flip-flops
 qtd_sequencial = 0
 meta_sequencial = 5
 
@@ -39,7 +39,7 @@ fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, qua
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
 limite = 120 * 1000  #2 minutos em milissegundos
 
-inventario = {"AND": 0, "NAND": 0, "NOT": 0, "OR": 0, "MUX": 0, "DMUX": 0, "Contador": 0, "Registrador": 0, "Flipflop": 0}
+inventario = {"AND": 0, "NAND": 0, "NOT": 0, "OR": 0, "MUX": 0, "DMUX": 0, "FlipFlop": 0, "Gaita de Fole" : 0, "APS" :0, "Cerveja Alemã" : 0}
 
 class Personagem():
     def __init__(self, x, y, vel, teclas, sprite):
@@ -93,7 +93,7 @@ def ocorreu_colisoes(personagem, coletaveis):
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
             inventario[coletavel.tipo] += 1
-            barulho_colisao.play()
+            #barulho_colisao.play()
 
 
 
@@ -104,18 +104,16 @@ def mostrar_quantidade_coletaveis(surf):
         i += 1
 
 
-coletaveis = [Coletavel(*posicao_coletavel_aleatoria(), "AND",         "and.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "NAND",        "nand.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "NOT",         "not.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "OR",          "or.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "MUX",         "mux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "DMUX",        "dmux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Contador",    "contador.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Registrador", "registrador.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "flipflop.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "cervejaalema.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "gaitadefole.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "APS.png"),]
+coletaveis = [Coletavel(*posicao_coletavel_aleatoria(), "AND",         "assets/sprites/and.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "NAND",        "assets/sprites/nand.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "NOT",         "assets/sprites/not.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "OR",          "assets/sprites/or.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "MUX",         "assets/sprites/mux.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "DMUX",        "assets/sprites/dmux.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
 
 #o * serve para desempacotar a tupla, invés de trazer ela assim (x,y) traz ela assim x,y (finalmente pode usar isso sem restrição das listas)
 
@@ -124,14 +122,16 @@ Fred = Personagem(
     vel=4,
     teclas={"cima": pygame.K_w, "baixo": pygame.K_s,
             "esq":  pygame.K_a, "dir":   pygame.K_d},
-    sprite="jogador1.png")
+    sprite="assets/sprites/fred.png"
+    )
 
 Stefan = Personagem(
     x=600, y=200,
     vel=4,
     teclas={"cima": pygame.K_UP,   "baixo": pygame.K_DOWN,
             "esq":  pygame.K_LEFT, "dir":   pygame.K_RIGHT},
-    sprite="jogador2.png")
+    sprite="assets/sprites/stefan.png"
+    )
 
 while True:
     clock.tick(60)
@@ -147,7 +147,7 @@ while True:
     texto_tempo = f'{minutos:02d}:{segundos:02d}'
 
     texto_surface = fonte.render(texto_tempo, True, (255, 255, 255))
-    tela.blit(texto_surface, (10, 10))  #posição x=10, y=10 (canto superior esquerdo)
+    tela.blit(texto_surface, (1350, 10))  #posição x=1350, y=10 (canto superior direito)
 
     for event in pygame.event.get():
         if event.type  == QUIT:
@@ -158,8 +158,8 @@ while True:
     Fred.mover(teclas)
     Stefan.mover(teclas)
 
-    ocorreu_colisoes(Fred, coletaveis)
     ocorreu_colisoes(Stefan, coletaveis)
+    ocorreu_colisoes(Fred, coletaveis)
 
     for coletavel in coletaveis:
         coletavel.desenhar(tela)
