@@ -63,6 +63,19 @@ class Personagem():
         if teclas[self.baixo]: 
             self.rect.y += self.vel
 
+        if self.rect.x >= largura - 64:
+            self.rect.x = largura - 64
+        if self.rect.x <= 0:
+            self.rect.x = 0
+        
+        if self.rect.y >= altura - 64:
+            self.rect.y = altura - 64
+        if self.rect.y <= 0:
+            self.rect.y = 0
+
+
+        
+
     def desenhar(self, surf):
         surf.blit(self.sprite, self.rect)
 
