@@ -23,7 +23,7 @@ barulho_cerveja.set_volume(0.5)
 
 largura = 1550
 altura = 800
-
+#oi
 #nivel 1 - portas logicas
 nivel1_completo = False
 meta_portas = 3
