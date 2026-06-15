@@ -22,16 +22,16 @@ largura = 1550
 altura = 800
 
 #nivel 1 - portas logicas
-qtd_portas = 0
+nivel1_completo = False
 meta_portas = 3
 
 #nivel 2 - mux e demux
-qtd_combinacional = 0
+nivel2_completo = False
 meta_combinacional = 3
 
 #nivel 3 - flip-flops
-qtd_sequencial = 0
-meta_sequencial = 5
+nivel3_completo = False
+meta_flipflops = 3
 
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")
@@ -105,7 +105,7 @@ def posicao_coletavel_aleatoria():
 
 
 def ocorreu_colisoes(personagem, coletaveis):
-    global tempo_inicio
+    global tempo_inicio, nivel1_completo, nivel2_completo, nivel3_completo
     for coletavel in coletaveis:
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
@@ -118,12 +118,22 @@ def ocorreu_colisoes(personagem, coletaveis):
                     barulho_aps.play()
                     tempo_inicio -= 10 * 1000 #diminui o tempo restante em 10 segundos
                 else:
-                    if coletavel.tipo == 'Cerveja Alemã':
-                        personagem.vel += 4
                     if personagem == Fred: 
                         barulho_fechei.play()
                     if personagem == Stefan:
                         barulho_gag.play() 
+                    if coletavel.tipo == 'Cerveja Alemã':
+                        personagem.vel += 4
+                    if coletavel.tipo == 'Portas Lógicas':
+                        if inventario['Portas Lógicas'] >= meta_portas:
+                            nivel1_completo = True
+                    if coletavel.tipo == 'Combinacionais':
+                        if inventario["Combinacionais"] >= meta_combinacional:
+                            nivel2_completo = True
+                    if coletavel.tipo == 'FlipFlop':
+                        if inventario['FlipFlop'] >= meta_flipflops:
+                            nivel3_completo = True
+
 
 
 
@@ -134,12 +144,27 @@ def mostrar_quantidade_coletaveis(surf):
         i += 1
 
 
-coletaveis = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
+coletaveis_nivel1 = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",        "assets/sprites/nand.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/not.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",          "assets/sprites/or.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
+
+coletaveis_nivel2 = [
     Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",         "assets/sprites/mux.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",        "assets/sprites/dmux.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",         "assets/sprites/mux.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",        "assets/sprites/dmux.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
+
+coletaveis_nivel3 = [
+    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
@@ -167,9 +192,24 @@ while True:
     clock.tick(60)
     tela.fill((30, 30, 40))
 
-    ocorreu_colisoes(Stefan, coletaveis)
-    ocorreu_colisoes(Fred, coletaveis)
-    
+    if not nivel1_completo:
+        for coletavel in coletaveis_nivel1:
+            coletavel.desenhar(tela)
+        ocorreu_colisoes(Stefan, coletaveis_nivel1)
+        ocorreu_colisoes(Fred, coletaveis_nivel1)
+
+    elif not nivel2_completo:
+        for coletavel in coletaveis_nivel2:
+            coletavel.desenhar(tela)
+        ocorreu_colisoes(Stefan, coletaveis_nivel2)
+        ocorreu_colisoes(Fred, coletaveis_nivel2)
+
+    elif not nivel3_completo:
+        for coletavel in coletaveis_nivel3:
+            coletavel.desenhar(tela) 
+        ocorreu_colisoes(Stefan, coletaveis_nivel3)
+        ocorreu_colisoes(Fred, coletaveis_nivel3)
+
     tempo_passado = pygame.time.get_ticks() - tempo_inicio
     tempo_restante = max(0, limite - tempo_passado) #o max evita tempo negativo
     
@@ -191,10 +231,7 @@ while True:
     Fred.mover(teclas)
     Stefan.mover(teclas)
 
-    for coletavel in coletaveis:
-        coletavel.desenhar(tela)
 
-    
     Fred.desenhar(tela)
     Stefan.desenhar(tela)
 
