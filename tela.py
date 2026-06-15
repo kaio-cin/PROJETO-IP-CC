@@ -42,7 +42,7 @@ fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, qua
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
 limite = 120 * 1000  #2 minutos em milissegundos
 
-inventario = {"AND": 0, "NAND": 0, "NOT": 0, "OR": 0, "MUX": 0, "DMUX": 0, "FlipFlop": 0, "Gaita de Fole" : 0, "APS" :0, "Cerveja Alemã" : 0}
+inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0, "Gaita de Fole" : 0, "APS" :0, "Cerveja Alemã" : 0}
 
 class Personagem():
     def __init__(self, x, y, vel, teclas, sprite):
@@ -134,12 +134,12 @@ def mostrar_quantidade_coletaveis(surf):
         i += 1
 
 
-coletaveis = [Coletavel(*posicao_coletavel_aleatoria(), "AND",         "assets/sprites/and.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "NAND",        "assets/sprites/nand.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "NOT",         "assets/sprites/not.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "OR",          "assets/sprites/or.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "MUX",         "assets/sprites/mux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "DMUX",        "assets/sprites/dmux.png"),
+coletaveis = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",        "assets/sprites/nand.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/not.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",          "assets/sprites/or.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",         "assets/sprites/mux.png"),
+    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",        "assets/sprites/dmux.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
