@@ -105,16 +105,21 @@ def posicao_coletavel_aleatoria():
 
 
 def ocorreu_colisoes(personagem, coletaveis):
+    global tempo_inicio
     for coletavel in coletaveis:
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
             inventario[coletavel.tipo] += 1
             if coletavel.tipo ==  "Gaita de Fole":
                 barulho_gaita.play()
+                tempo_inicio += 10 * 1000 #aumenta o tempo restante em 10 segundos
             else: 
                 if coletavel.tipo == 'APS':
                     barulho_aps.play()
+                    tempo_inicio -= 10 * 1000 #diminui o tempo restante em 10 segundos
                 else:
+                    if coletavel.tipo == 'Cerveja Alemã':
+                        personagem.vel += 4
                     if personagem == Fred: 
                         barulho_fechei.play()
                     if personagem == Stefan:
@@ -161,6 +166,9 @@ Stefan = Personagem(
 while True:
     clock.tick(60)
     tela.fill((30, 30, 40))
+
+    ocorreu_colisoes(Stefan, coletaveis)
+    ocorreu_colisoes(Fred, coletaveis)
     
     tempo_passado = pygame.time.get_ticks() - tempo_inicio
     tempo_restante = max(0, limite - tempo_passado) #o max evita tempo negativo
@@ -182,9 +190,6 @@ while True:
     teclas = pygame.key.get_pressed()
     Fred.mover(teclas)
     Stefan.mover(teclas)
-
-    ocorreu_colisoes(Stefan, coletaveis)
-    ocorreu_colisoes(Fred, coletaveis)
 
     for coletavel in coletaveis:
         coletavel.desenhar(tela)
