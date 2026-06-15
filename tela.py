@@ -93,7 +93,14 @@ def ocorreu_colisoes(personagem, coletaveis):
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
             inventario[coletavel.tipo] += 1
-            #barulho_colisao.play()
+            if coletavel.tipo ==  "Gaita de Fole":
+                barulho_gaita.play()
+            else: 
+                if (personagem == Fred) and (coletavel.tipo != "APS"):
+                    barulho_fechei.play()
+                if (personagem == Stefan) and (coletavel.tipo != "APS"):
+                    barulho_gag.play()
+                
 
 
 
