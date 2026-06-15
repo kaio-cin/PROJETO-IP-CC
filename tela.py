@@ -15,6 +15,9 @@ barulho_gaita.set_volume(1)
 barulho_fechei = pygame.mixer.Sound('assets/sons/fechei.mp3') 
 barulho_fechei.set_volume(1) 
 
+barulho_aps = pygame.mixer.Sound('assets/sons/aps.mp3') 
+barulho_aps.set_volume(1) 
+
 largura = 1550
 altura = 800
 
@@ -109,11 +112,13 @@ def ocorreu_colisoes(personagem, coletaveis):
             if coletavel.tipo ==  "Gaita de Fole":
                 barulho_gaita.play()
             else: 
-                if (personagem == Fred) and (coletavel.tipo != "APS"):
-                    barulho_fechei.play()
-                if (personagem == Stefan) and (coletavel.tipo != "APS"):
-                    barulho_gag.play()
-                
+                if coletavel.tipo == 'APS':
+                    barulho_aps.play()
+                else:
+                    if personagem == Fred: 
+                        barulho_fechei.play()
+                    if personagem == Stefan:
+                        barulho_gag.play() 
 
 
 
