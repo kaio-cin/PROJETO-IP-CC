@@ -18,6 +18,9 @@ barulho_fechei.set_volume(1)
 barulho_aps = pygame.mixer.Sound('assets/sons/aps.mp3') 
 barulho_aps.set_volume(1) 
 
+barulho_cerveja = pygame.mixer.Sound('assets/sons/cerveja.mp3') 
+barulho_cerveja.set_volume(1) 
+
 largura = 1550
 altura = 800
 
@@ -118,23 +121,23 @@ def ocorreu_colisoes(personagem, coletaveis):
                     barulho_aps.play()
                     tempo_inicio -= 10 * 1000 #diminui o tempo restante em 10 segundos
                 else:
-                    if personagem == Fred: 
-                        barulho_fechei.play()
-                    if personagem == Stefan:
-                        barulho_gag.play() 
                     if coletavel.tipo == 'Cerveja Alemã':
+                        barulho_cerveja.play()
                         personagem.vel += 4
-                    if coletavel.tipo == 'Portas Lógicas':
-                        if inventario['Portas Lógicas'] >= meta_portas:
-                            nivel1_completo = True
-                    if coletavel.tipo == 'Combinacionais':
-                        if inventario["Combinacionais"] >= meta_combinacional:
-                            nivel2_completo = True
-                    if coletavel.tipo == 'FlipFlop':
-                        if inventario['FlipFlop'] >= meta_flipflops:
-                            nivel3_completo = True
-
-
+                    else:
+                        if personagem == Fred: 
+                            barulho_fechei.play()
+                        if personagem == Stefan:
+                            barulho_gag.play() 
+                        if coletavel.tipo == 'Portas Lógicas':
+                            if inventario['Portas Lógicas'] >= meta_portas:
+                                nivel1_completo = True
+                        if coletavel.tipo == 'Combinacionais':
+                            if inventario["Combinacionais"] >= meta_combinacional:
+                                nivel2_completo = True
+                        if coletavel.tipo == 'FlipFlop':
+                            if inventario['FlipFlop'] >= meta_flipflops:
+                                nivel3_completo = True
 
 
 def mostrar_quantidade_coletaveis(surf):
