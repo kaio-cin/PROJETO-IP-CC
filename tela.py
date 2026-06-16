@@ -68,18 +68,38 @@ class Personagem():
         self.esq = teclas['esq']
         self.dir = teclas['dir']
         self.sprite = pygame.image.load(sprite).convert_alpha()
-       
+        self.vel_normal = vel
+        self.vel_bonus = False
+        self.fim_efeito_cerveja = 0
+        self.controles_invertidos = False
 
 
     def mover(self, teclas):
-        if teclas[self.esq]: 
-            self.rect.x -= self.vel
-        if teclas[self.dir]: 
-            self.rect.x += self.vel
-        if teclas[self.cima]: 
-            self.rect.y -= self.vel
-        if teclas[self.baixo]: 
-            self.rect.y += self.vel
+
+        if self.vel_bonus and pygame.time.get_ticks() >= self.fim_efeito_cerveja:
+            self.vel = self.vel_normal
+            self.vel_bonus = False
+            self.controles_invertidos = False
+            
+        if not self.controles_invertidos:
+            if teclas[self.esq]:
+                self.rect.x -= self.vel
+            if teclas[self.dir]:
+                self.rect.x += self.vel
+            if teclas[self.cima]:
+                self.rect.y -= self.vel
+            if teclas[self.baixo]:
+                self.rect.y += self.vel
+
+        else:
+            if teclas[self.esq]:
+                self.rect.x += self.vel
+            if teclas[self.dir]:
+                self.rect.x -= self.vel
+            if teclas[self.cima]:
+                self.rect.y += self.vel
+            if teclas[self.baixo]:
+                self.rect.y -= self.vel
 
         if self.rect.x >= largura - 48:
             self.rect.x = largura - 48
@@ -163,7 +183,10 @@ def ocorreu_colisoes(personagem, coletaveis):
 
             elif coletavel.tipo == 'Cerveja Alemã':
                 barulho_cerveja.play()
-                personagem.vel += 4
+                personagem.vel = personagem.vel_normal + 1.5
+                personagem.vel_bonus = True
+                personagem.controles_invertidos = True
+                personagem.fim_efeito_cerveja = pygame.time.get_ticks() + 7000 #efeito dura 7 segundos
 
             else:
                 if personagem == Fred: 
