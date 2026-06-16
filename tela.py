@@ -47,7 +47,7 @@ clock = pygame.time.Clock()
 fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, quando a gente testar a gente troca
 
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
-limite = 120 * 1000  #2 minutos em milissegundos
+limite = 3 * 1000  #2 minutos em milissegundos
 
 inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0}
 
@@ -276,10 +276,59 @@ def mostrar_quantidade_coletaveis(surf):
 
 def desenhar_game_over(surf):
     surf.fill((0, 0, 0))
-    texto    = fonte.render("GAME OVER", True, (255, 0, 0)) 
-    surf.blit(texto, (largura // 2 - texto.get_width() // 2, altura // 2))
+    fonte_game_over = pygame.font.SysFont('Arial', 40, True)
+    texto_game_over = fonte_game_over.render("GAME OVER", False, (255, 0, 0))
+    texto_restart = fonte.render("aperte R para recomeçar", True, (255, 0, 0))
 
+    surf.blit(texto_game_over, (largura // 2 - texto_game_over.get_width() // 2, altura // 2 - 20))
 
+    surf.blit(texto_restart, (largura // 2 - texto_restart.get_width() // 2, altura // 2 + 20))
+
+def reiniciar_jogo():
+    global game_over
+    global nivel1_completo, nivel2_completo, nivel3_completo
+    global inventario
+    global tempo_inicio
+    global coletaveis_totais_naopegos
+    global normais_ativos
+    global easter_eggs_nao_pegos
+    global nivel_anterior
+
+    game_over = False
+
+    nivel1_completo = False
+    nivel2_completo = False
+    nivel3_completo = False
+
+    nivel_anterior = 0
+
+    inventario = {
+        "Portas Lógicas": 0,
+        "Combinacionais": 0,
+        "FlipFlop": 0
+    }
+
+    Fred.rect.x = 100
+    Fred.rect.y = 200
+
+    Stefan.rect.x = 600
+    Stefan.rect.y = 200
+
+    Fred.vel = Fred.vel_normal
+    Stefan.vel = Stefan.vel_normal
+
+    Fred.vel_bonus = False
+    Stefan.vel_bonus = False
+
+    Fred.controles_invertidos = False
+    Stefan.controles_invertidos = False
+
+    tempo_inicio = pygame.time.get_ticks()
+
+    easter_eggs_nao_pegos = spawnar_easter_eggs()
+    normais_ativos = spawnar_dois_coletaveis(portas)
+
+    coletaveis_totais_naopegos = (easter_eggs_nao_pegos + normais_ativos)
     
 '''coletaveis_nivel1 = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",        "assets/sprites/nand.png"),
@@ -333,9 +382,15 @@ while True:
         if event.type  == QUIT:
             pygame.quit()
             exit()
+        
+        if event.type == pygame.KEYDOWN:
+            if game_over and event.key == pygame.K_r:
+                reiniciar_jogo()
 
     if game_over:
         desenhar_game_over(tela)
+        pygame.display.update()
+        continue
 
     else:
         if not nivel1_completo:
