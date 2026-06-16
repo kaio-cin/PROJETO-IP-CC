@@ -39,15 +39,17 @@ meta_flipflops = 3
 nivel_anterior = 0
 
 game_over = False
+vitoria = False
 
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")
 
 clock = pygame.time.Clock()
 fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, quando a gente testar a gente troca
+fonte_game_over = pygame.font.SysFont('Arial', 40, True) 
 
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
-limite = 3 * 1000  #2 minutos em milissegundos
+limite = 120 * 1000  #2 minutos em milissegundos
 
 inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0}
 
@@ -276,7 +278,6 @@ def mostrar_quantidade_coletaveis(surf):
 
 def desenhar_game_over(surf):
     surf.fill((0, 0, 0))
-    fonte_game_over = pygame.font.SysFont('Arial', 40, True)
     texto_game_over = fonte_game_over.render("GAME OVER", False, (255, 0, 0))
     texto_restart = fonte.render("aperte R para recomeçar", True, (255, 0, 0))
 
@@ -284,8 +285,20 @@ def desenhar_game_over(surf):
 
     surf.blit(texto_restart, (largura // 2 - texto_restart.get_width() // 2, altura // 2 + 20))
 
+def desenhar_vitoria(surf):
+    global fonte_game_over
+
+    surf.fill((0, 0, 0))
+
+    texto_vitoria = fonte_game_over.render("VICTORY!", True, (0, 255, 0))
+    texto_restart = fonte.render("aperte R para recomeçar", True, (0, 255, 0))
+
+    surf.blit(texto_vitoria, (largura // 2 - texto_vitoria.get_width() // 2, altura // 2 - 60))
+
+    surf.blit(texto_restart, (largura // 2 - texto_restart.get_width() // 2, altura // 2 + 20))
+
 def reiniciar_jogo():
-    global game_over
+    global game_over, vitoria
     global nivel1_completo, nivel2_completo, nivel3_completo
     global inventario
     global tempo_inicio
@@ -295,6 +308,7 @@ def reiniciar_jogo():
     global nivel_anterior
 
     game_over = False
+    vitoria = False
 
     nivel1_completo = False
     nivel2_completo = False
@@ -384,11 +398,16 @@ while True:
             exit()
         
         if event.type == pygame.KEYDOWN:
-            if game_over and event.key == pygame.K_r:
+            if (game_over or vitoria) and event.key == pygame.K_r:
                 reiniciar_jogo()
 
     if game_over:
         desenhar_game_over(tela)
+        pygame.display.update()
+        continue
+
+    elif vitoria:
+        desenhar_vitoria(tela)
         pygame.display.update()
         continue
 
@@ -439,6 +458,9 @@ while True:
     if tempo_restante == 0 and not (nivel1_completo and nivel2_completo and nivel3_completo):
         game_over = True
 
+    if nivel1_completo and nivel2_completo and nivel3_completo:
+        vitoria = True
+    
     texto_tempo = fonte.render(f'{minutos:02d}:{segundos:02d}', True, (255, 255, 255))
     
     pos_cronometro = (largura - 100, 10)
