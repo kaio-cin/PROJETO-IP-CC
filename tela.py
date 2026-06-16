@@ -4,29 +4,15 @@ from random import randint
 from pygame.locals import *
 from sys import exit
 
+
 pygame.init()
 
-musica_fundo = pygame.mixer.Sound('assets/sons/musicafundo.mp3') 
-musica_fundo.set_volume(1) 
+#Inicializando as musicas
+from game.musicas import *
 musica_fundo.play()
 
-barulho_gag = pygame.mixer.Sound('assets/sons/gag.mp3') 
-barulho_gag.set_volume(1) 
-
-barulho_gaita = pygame.mixer.Sound('assets/sons/gaita.mp3') 
-barulho_gaita.set_volume(0.3) 
-
-barulho_fechei = pygame.mixer.Sound('assets/sons/fechei.mp3') 
-barulho_fechei.set_volume(1) 
-
-barulho_aps = pygame.mixer.Sound('assets/sons/aps.mp3') 
-barulho_aps.set_volume(1) 
-
-barulho_cerveja = pygame.mixer.Sound('assets/sons/cerveja.mp3') 
-barulho_cerveja.set_volume(0.5) 
-
-largura = 1200
-altura = 700
+largura = 1550
+altura = 800
 
 #nivel 1 - portas logicas
 nivel1_completo = False
@@ -393,9 +379,12 @@ Stefan = Personagem(
     sprite="assets/sprites/stefan.png"
     )
 
+mapa = pygame.image.load('assets/sprites/mapa.png').convert()
+mapa = pygame.transform.scale(mapa, (largura, altura))
+
 while True:
     clock.tick(60)
-
+    tela.blit(mapa, (0, 0))
     for event in pygame.event.get():
         if event.type  == QUIT:
             pygame.quit()
@@ -431,7 +420,6 @@ while True:
             atualizar_coletaveis_ao_mudar_nivel()
 
 
-        tela.fill((30, 30, 40))
 
     '''if not nivel1_completo:
         for coletavel in coletaveis_nivel1:
