@@ -21,8 +21,8 @@ barulho_aps.set_volume(1)
 barulho_cerveja = pygame.mixer.Sound('assets/sons/cerveja.mp3') 
 barulho_cerveja.set_volume(0.5) 
 
-largura = 1550
-altura = 800
+largura = 1200
+altura = 700
 
 #nivel 1 - portas logicas
 nivel1_completo = False
@@ -81,13 +81,13 @@ class Personagem():
         if teclas[self.baixo]: 
             self.rect.y += self.vel
 
-        if self.rect.x >= largura - 64:
-            self.rect.x = largura - 64
+        if self.rect.x >= largura - 48:
+            self.rect.x = largura - 48
         if self.rect.x <= 0:
             self.rect.x = 0
         
-        if self.rect.y >= altura - 64:
-            self.rect.y = altura - 64
+        if self.rect.y >= altura - 48:
+            self.rect.y = altura - 48
         if self.rect.y <= 0:
             self.rect.y = 0
 
@@ -114,7 +114,7 @@ class Coletavel():
 margem_do_mapa = 30 #valor aleatorio so pra colocar no codigo
 
 def posicao_coletavel_aleatoria():
-    x = randint (50, largura - margem_do_mapa - 25)   #o -32 vem da largura do coletavel
+    x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
     y = randint(50, altura - margem_do_mapa - 25)
     return x, y
 
@@ -362,8 +362,9 @@ while True:
         game_over = True
 
     texto_tempo = fonte.render(f'{minutos:02d}:{segundos:02d}', True, (255, 255, 255))
-
-    tela.blit(texto_tempo, (1350, 10))    #posição x=1350, y=10 (canto superior direito)
+    
+    pos_cronometro = (largura - 100, 10)
+    tela.blit(texto_tempo, pos_cronometro)    #posição x=1350, y=10 (canto superior direito)
 
     ocorreu_colisoes(Fred, coletaveis_totais_naopegos)
     ocorreu_colisoes(Stefan, coletaveis_totais_naopegos)
