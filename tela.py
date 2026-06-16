@@ -6,6 +6,10 @@ from sys import exit
 
 pygame.init()
 
+musica_fundo = pygame.mixer.Sound('assets/sons/musicafundo.mp3') 
+musica_fundo.set_volume(1) 
+musica_fundo.play()
+
 barulho_gag = pygame.mixer.Sound('assets/sons/gag.mp3') 
 barulho_gag.set_volume(1) 
 
@@ -49,7 +53,7 @@ fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, qua
 fonte_game_over = pygame.font.SysFont('Arial', 40, True) 
 
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
-limite = 120 * 1000  #2 minutos em milissegundos
+limite = 70 * 1000  #2 minutos em milissegundos
 
 inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0}
 
