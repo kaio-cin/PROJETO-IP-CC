@@ -23,7 +23,7 @@ barulho_cerveja.set_volume(0.5)
 
 largura = 1550
 altura = 800
-#oi
+
 #nivel 1 - portas logicas
 nivel1_completo = False
 meta_portas = 3
@@ -36,6 +36,10 @@ meta_combinacional = 3
 nivel3_completo = False
 meta_flipflops = 3
 
+nivel_anterior = 0
+
+game_over = False
+
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")
 
@@ -45,7 +49,15 @@ fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, qua
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
 limite = 120 * 1000  #2 minutos em milissegundos
 
-inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0, "Gaita de Fole" : 0, "APS" :0, "Cerveja Alemã" : 0}
+inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0}
+
+easter_eggs = [("Cerveja Alemã", "assets/sprites/cervejaalema.png"), ("Gaita de Fole", "assets/sprites/gaita.png"), ("APS", "assets/sprites/aps.png")]
+
+portas = [("Portas Lógicas", "assets/sprites/and.png"), ("Portas Lógicas", "assets/sprites/nand.png"), ("Portas Lógicas", "assets/sprites/not.png"), ("Portas Lógicas", "assets/sprites/or.png")]
+
+combinacionais = [("Combinacionais", "assets/sprites/mux.png"), ("Combinacionais", "assets/sprites/dmux.png")]
+
+flipflops = [("FlipFlop", "assets/sprites/flipflop.png")]
 
 class Personagem():
     def __init__(self, x, y, vel, teclas, sprite):
@@ -107,48 +119,146 @@ def posicao_coletavel_aleatoria():
     return x, y
 
 
+def spawnar_easter_eggs():
+    lista_easter_eggs = []
+    for tipo, sprite in easter_eggs:
+        x, y = posicao_coletavel_aleatoria()
+        lista_easter_eggs.append(Coletavel(x, y, tipo, sprite))
+    
+    return lista_easter_eggs
+
+
+def spawnar_dois_coletaveis(lista_coletaveis):
+    lista_coletaveis_escolhidos = []
+    
+    escolhidos = random.sample(lista_coletaveis, min(2, len(lista_coletaveis)))
+
+    for tipo, sprite in escolhidos:
+        x, y = posicao_coletavel_aleatoria()
+        lista_coletaveis_escolhidos.append(Coletavel(x, y, tipo, sprite))
+
+    return lista_coletaveis_escolhidos
+
+
+easter_eggs_nao_pegos = spawnar_easter_eggs()
+normais_ativos = spawnar_dois_coletaveis(portas)
+
+coletaveis_totais_naopegos = easter_eggs_nao_pegos + normais_ativos
+
+
 def ocorreu_colisoes(personagem, coletaveis):
     global tempo_inicio, nivel1_completo, nivel2_completo, nivel3_completo
+    global coletaveis_totais_naopegos, normais_ativos
+
     for coletavel in coletaveis:
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
-            inventario[coletavel.tipo] += 1
+            
             if coletavel.tipo ==  "Gaita de Fole":
                 barulho_gaita.play()
                 tempo_inicio += 10 * 1000 #aumenta o tempo restante em 10 segundos
-            else: 
-                if coletavel.tipo == 'APS':
-                    barulho_aps.play()
-                    tempo_inicio -= 10 * 1000 #diminui o tempo restante em 10 segundos
-                else:
-                    if coletavel.tipo == 'Cerveja Alemã':
-                        barulho_cerveja.play()
-                        personagem.vel += 4
+            elif coletavel.tipo == 'APS':
+                barulho_aps.play()
+                tempo_inicio -= 10 * 1000
+
+            elif coletavel.tipo == 'Cerveja Alemã':
+                barulho_cerveja.play()
+                personagem.vel += 4
+
+            else:
+                if personagem == Fred: 
+                    barulho_fechei.play()
+                if personagem == Stefan:
+                    barulho_gag.play()
+
+                inventario[coletavel.tipo] += 1
+
+                if coletavel.tipo == 'Portas Lógicas':
+                    if inventario['Portas Lógicas'] >= meta_portas:
+                        nivel1_completo = True
+
                     else:
-                        if personagem == Fred: 
-                            barulho_fechei.play()
-                        if personagem == Stefan:
-                            barulho_gag.play() 
-                        if coletavel.tipo == 'Portas Lógicas':
-                            if inventario['Portas Lógicas'] >= meta_portas:
-                                nivel1_completo = True
-                        if coletavel.tipo == 'Combinacionais':
-                            if inventario["Combinacionais"] >= meta_combinacional:
-                                nivel2_completo = True
-                        if coletavel.tipo == 'FlipFlop':
-                            if inventario['FlipFlop'] >= meta_flipflops:
-                                nivel3_completo = True
+                        novos_coletaveis = spawnar_dois_coletaveis(portas)
+                        normais_ativos += novos_coletaveis
+                        coletaveis_totais_naopegos += novos_coletaveis
+
+                elif coletavel.tipo == 'Combinacionais':
+                    if inventario["Combinacionais"] >= meta_combinacional:
+                        nivel2_completo = True
+
+                    else:
+                        novos_coletaveis = spawnar_dois_coletaveis(combinacionais)
+                        normais_ativos += novos_coletaveis
+                        coletaveis_totais_naopegos += novos_coletaveis
+
+                elif coletavel.tipo == 'FlipFlop':
+                    if inventario['FlipFlop'] >= meta_flipflops:
+                        nivel3_completo = True
+
+                    else:
+                        novos_coletaveis = spawnar_dois_coletaveis(flipflops)
+                        normais_ativos += novos_coletaveis
+                        coletaveis_totais_naopegos += novos_coletaveis
+
+
+def atualizar_coletaveis_ao_mudar_nivel():
+    global coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos
+
+    easter_eggs_nao_pegos = spawnar_easter_eggs()
+
+    if not nivel1_completo:
+        normais_ativos = spawnar_dois_coletaveis(portas)
+
+    elif not nivel2_completo:
+        normais_ativos = spawnar_dois_coletaveis(combinacionais)
+
+    elif not nivel3_completo:
+        normais_ativos = spawnar_dois_coletaveis(flipflops)
+
+    coletaveis_totais_naopegos = normais_ativos + easter_eggs_nao_pegos
+
 
 
 def mostrar_quantidade_coletaveis(surf):
-    i = 0
-    for tipo, quantidade in inventario.items():
-        if (tipo == 'Portas Lógicas') or (tipo == 'Combinacionais') or (tipo == 'FlipFlop'):
-            surf.blit(fonte.render(f'{tipo}: {quantidade}', True, (255, 255, 255)), (10, 20 * i))
-        i += 1
+    if not nivel1_completo:
+        nivel = 'Nível 1 - Portas Lógicas'
+        tipo = 'Portas Lógicas'
+        meta = meta_portas
+
+    
+    elif not nivel2_completo:
+        nivel = 'Nível 2 - Combinacionais'
+        tipo = 'Combinacionais'
+        meta = meta_combinacional
+
+    
+    elif not nivel3_completo:
+        nivel = 'Nível 3 - Sequenciais'
+        tipo = 'FlipFlop'
+        meta = meta_flipflops
+
+    else:
+        nivel = 'Completo!'
+        tipo = 'nenhum'
+        meta = 0
+
+    
+    texto = fonte.render(nivel, True, (255, 255, 255))
+    surf.blit(texto, (largura // 2 - texto.get_width() // 2, 10))   #essa funcao get_width pega a largura do texto
+
+    if tipo != 'nenhum':
+        quantidade = inventario[tipo]
+        texto_quantidade = fonte.render(f'{tipo}: {quantidade} / {meta}', True, (255, 255, 255))
+        surf.blit(texto_quantidade, (10, 10))
+
+def desenhar_game_over(surf):
+    surf.fill((0, 0, 0))
+    texto    = fonte.render("GAME OVER", True, (255, 0, 0)) 
+    surf.blit(texto, (largura // 2 - texto.get_width() // 2, altura // 2))
 
 
-coletaveis_nivel1 = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
+    
+'''coletaveis_nivel1 = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",        "assets/sprites/nand.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/not.png"),
     Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",          "assets/sprites/or.png"),
@@ -175,6 +285,7 @@ coletaveis_nivel3 = [
     Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
 
 #o * serve para desempacotar a tupla, invés de trazer ela assim (x,y) traz ela assim x,y (finalmente pode usar isso sem restrição das listas)
+'''
 
 Fred = Personagem(
     x=100, y=200,
@@ -194,9 +305,34 @@ Stefan = Personagem(
 
 while True:
     clock.tick(60)
-    tela.fill((30, 30, 40))
 
-    if not nivel1_completo:
+    for event in pygame.event.get():
+        if event.type  == QUIT:
+            pygame.quit()
+            exit()
+
+    if game_over:
+        desenhar_game_over(tela)
+
+    else:
+        if not nivel1_completo:
+            nivel_atual = 0
+
+        else:
+            if not nivel2_completo:
+                nivel_atual = 1
+
+            else:
+                nivel_atual = 2
+
+        if nivel_atual != nivel_anterior:
+            nivel_anterior = nivel_atual
+            atualizar_coletaveis_ao_mudar_nivel()
+
+
+        tela.fill((30, 30, 40))
+
+    '''if not nivel1_completo:
         for coletavel in coletaveis_nivel1:
             coletavel.desenhar(tela)
         ocorreu_colisoes(Stefan, coletaveis_nivel1)
@@ -212,7 +348,7 @@ while True:
         for coletavel in coletaveis_nivel3:
             coletavel.desenhar(tela) 
         ocorreu_colisoes(Stefan, coletaveis_nivel3)
-        ocorreu_colisoes(Fred, coletaveis_nivel3)
+        ocorreu_colisoes(Fred, coletaveis_nivel3)'''
 
     tempo_passado = pygame.time.get_ticks() - tempo_inicio
     tempo_restante = max(0, limite - tempo_passado) #o max evita tempo negativo
@@ -221,15 +357,19 @@ while True:
 
     minutos = segundos_restantes // 60
     segundos = segundos_restantes % 60
-    texto_tempo = f'{minutos:02d}:{segundos:02d}'
 
-    texto_surface = fonte.render(texto_tempo, True, (255, 255, 255))
-    tela.blit(texto_surface, (1350, 10))  #posição x=1350, y=10 (canto superior direito)
+    if tempo_restante == 0 and not (nivel1_completo and nivel2_completo and nivel3_completo):
+        game_over = True
 
-    for event in pygame.event.get():
-        if event.type  == QUIT:
-            pygame.quit()
-            exit()
+    texto_tempo = fonte.render(f'{minutos:02d}:{segundos:02d}', True, (255, 255, 255))
+
+    tela.blit(texto_tempo, (1350, 10))    #posição x=1350, y=10 (canto superior direito)
+
+    ocorreu_colisoes(Fred, coletaveis_totais_naopegos)
+    ocorreu_colisoes(Stefan, coletaveis_totais_naopegos)
+
+    for coletavel in coletaveis_totais_naopegos:
+        coletavel.desenhar(tela)
             
     teclas = pygame.key.get_pressed()
     Fred.mover(teclas)
