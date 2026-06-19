@@ -9,7 +9,7 @@ pygame.init()
 
 #Inicializando as musicas
 from game.musicas import *
-musica_fundo.play()
+musica_fundo.play(-1) #o -1 faz a musica tocar em loop
 
 largura = 1550
 altura = 800
@@ -280,11 +280,15 @@ def remover_do_pool(tipo, sprite, pool):
 #garante que sempre haja 2 coletaveis do tipo necessário para o nível, mesmo que o jogador pegue um e não tenha mais no pool
 def manter_dois_coletaveis(pool):
     global normais_ativos, coletaveis_totais_naopegos
+    
+    normais_ativos[:] = [c for c in normais_ativos if c.naopego]
 
     ativos_visiveis = [
         c for c in normais_ativos
         if c.naopego
     ]
+
+    coletaveis_totais_naopegos[:] = [c for c in coletaveis_totais_naopegos if c.naopego]
 
     while len(ativos_visiveis) < 2 and len(pool) > 0:
 
@@ -400,6 +404,17 @@ def reiniciar_jogo():
     global normais_ativos
     global easter_eggs_nao_pegos
     global nivel_anterior
+    global portas_restantes
+    global combinacionais_restantes
+
+    portas_restantes = portas.copy()
+
+    combinacionais_restantes = [
+        ("MUX", "assets/sprites/mux.png"),
+        ("MUX", "assets/sprites/mux.png"),
+        ("DEMUX", "assets/sprites/dmux.png"),
+        ("DEMUX", "assets/sprites/dmux.png")
+    ]
 
     game_over = False
     vitoria = False
@@ -435,7 +450,7 @@ def reiniciar_jogo():
     tempo_inicio = pygame.time.get_ticks()
 
     easter_eggs_nao_pegos = spawnar_easter_eggs()
-    normais_ativos = spawnar_dois_coletaveis(portas)
+    normais_ativos = spawnar_dois_coletaveis(portas_restantes)
 
     coletaveis_totais_naopegos = (easter_eggs_nao_pegos + normais_ativos)
     
