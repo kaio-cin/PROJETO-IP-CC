@@ -62,6 +62,14 @@ combinacionais_restantes = [
     ("DEMUX", "assets/sprites/dmux.png")
     ]
 
+obstaculos = [
+    pygame.Rect(0, 337, 50, 40),  #parte esquerda do rio
+    pygame.Rect(103, 337, 460, 40),  #parte pós primeira ponte do rio
+    pygame.Rect(615, 337, 540, 40),  #parte poós segunda ponte do rio
+    pygame.Rect(1210, 337, 330, 40), #parte direita do rio
+    ]
+
+
 
 class Personagem():
     def __init__(self, x, y, vel, teclas, sprite):
@@ -86,33 +94,63 @@ class Personagem():
             self.controles_invertidos = False
             
         if not self.controles_invertidos:
-            if teclas[self.esq]:
+            if teclas[self.esq]: 
                 self.rect.x -= self.vel
-            if teclas[self.dir]:
+            if teclas[self.dir]: 
                 self.rect.x += self.vel
-            if teclas[self.cima]:
-                self.rect.y -= self.vel
-            if teclas[self.baixo]:
-                self.rect.y += self.vel
-
         else:
-            if teclas[self.esq]:
+            if teclas[self.esq]: 
                 self.rect.x += self.vel
-            if teclas[self.dir]:
+            if teclas[self.dir]: 
                 self.rect.x -= self.vel
-            if teclas[self.cima]:
+
+        # checa colisao no eixo X e corrige
+        for obstaculo in obstaculos:
+            if self.rect.colliderect(obstaculo):
+                if not self.controles_invertidos:
+                    if teclas[self.dir]: 
+                        self.rect.right = obstaculo.left
+                    if teclas[self.esq]: 
+                        self.rect.left  = obstaculo.right
+                else:
+                    if teclas[self.esq]: 
+                        self.rect.right = obstaculo.left
+                    if teclas[self.dir]: 
+                        self.rect.left  = obstaculo.right
+
+        # move no eixo Y
+        if not self.controles_invertidos:
+            if teclas[self.cima]:  
+                self.rect.y -= self.vel
+            if teclas[self.baixo]: 
                 self.rect.y += self.vel
-            if teclas[self.baixo]:
+        else:
+            if teclas[self.cima]:  
+                self.rect.y += self.vel
+            if teclas[self.baixo]: 
                 self.rect.y -= self.vel
 
-        if self.rect.x >= largura - 48:
+        # checa colisao no eixo Y e corrige
+        for obstaculo in obstaculos:
+            if self.rect.colliderect(obstaculo):
+                if not self.controles_invertidos:
+                    if teclas[self.baixo]: 
+                        self.rect.bottom = obstaculo.top
+                    if teclas[self.cima]:  
+                        self.rect.top    = obstaculo.bottom
+                else:
+                    if teclas[self.cima]:  
+                        self.rect.bottom = obstaculo.top
+                    if teclas[self.baixo]: 
+                        self.rect.top    = obstaculo.bottom
+            
+        if self.rect.x >= largura - 48: 
             self.rect.x = largura - 48
-        if self.rect.x <= 0:
+        if self.rect.x <= 0:            
             self.rect.x = 0
-        
-        if self.rect.y >= altura - 48:
+        if self.rect.y >= altura - 48:  
             self.rect.y = altura - 48
-        if self.rect.y <= 0:
+        if self.rect.y <= 0:           
             self.rect.y = 0
 
 
@@ -488,6 +526,8 @@ mapa = pygame.image.load('assets/sprites/mapa.png').convert()
 mapa = pygame.transform.scale(mapa, (largura, altura))
 
 while True:
+    pos_mouse = pygame.mouse.get_pos()
+    print(pos_mouse)
     clock.tick(60)
     tela.blit(mapa, (0, 0))
     for event in pygame.event.get():
