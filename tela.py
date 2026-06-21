@@ -63,10 +63,28 @@ combinacionais_restantes = [
     ]
 
 obstaculos = [
-    pygame.Rect(0, 337, 50, 40),  #parte esquerda do rio
-    pygame.Rect(103, 337, 460, 40),  #parte pós primeira ponte do rio
+    pygame.Rect(0, 335, 50, 40),  #parte esquerda do rio
+    pygame.Rect(105, 335, 460, 40),  #parte pós primeira ponte do rio
     pygame.Rect(615, 337, 540, 40),  #parte poós segunda ponte do rio
     pygame.Rect(1210, 337, 330, 40), #parte direita do rio
+    #caixas maiores
+    pygame.Rect(849, 695, 43, 54),
+    pygame.Rect(1128, 258, 24, 35),
+    #caixas pequenas
+    pygame.Rect(312, 698, 27, 42), 
+    pygame.Rect(358, 685, 27, 42), 
+    pygame.Rect(442, 482, 27, 42),
+    pygame.Rect(478, 459, 27, 42),
+    pygame.Rect(851, 553, 27, 42),
+    pygame.Rect(885, 525, 27, 42),
+    pygame.Rect(1056, 182, 27, 42),
+    pygame.Rect(1097, 154, 20, 20),
+    pygame.Rect(1142, 735, 20, 20),
+    #bancos
+    pygame.Rect(423, 202, 82, 30),
+    pygame.Rect(958, 685, 82, 30),
+    #fonte - nao existe um pygame.circle ent tive q fazer um retangulo aproximado, colisao c circulo é mais complicado
+    pygame.Rect(864, 226, 57, 38)
     ]
 
 
@@ -177,10 +195,15 @@ class Coletavel():
 margem_do_mapa = 30 #valor aleatorio so pra colocar no codigo
 
 def posicao_coletavel_aleatoria():
-    x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
-    y = randint(50, altura - margem_do_mapa - 25)
-    return x, y
-
+    posicao_valida = False
+    while not posicao_valida:
+        x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
+        y = randint(50, altura - margem_do_mapa - 25)
+        rect_coletavel = pygame.Rect(x, y, 25, 25)
+        if not any(rect_coletavel.colliderect(obstaculo) for obstaculo in obstaculos): 
+            posicao_valida = True
+            return x, y
+        
 
 def spawnar_easter_eggs():
     lista_easter_eggs = []
