@@ -62,6 +62,45 @@ combinacionais_restantes = [
     ("DEMUX", "assets/sprites/dmux.png")
     ]
 
+obstaculos = [
+    pygame.Rect(0, 335, 50, 40),  #parte esquerda do rio
+    pygame.Rect(105, 335, 460, 40),  #parte pós primeira ponte do rio
+    pygame.Rect(615, 337, 540, 40),  #parte pós segunda ponte do rio
+    pygame.Rect(1210, 337, 330, 40), #parte direita do rio
+    #caixas maiores
+    pygame.Rect(853, 705, 20, 10),
+    pygame.Rect(1140, 275, 20, 10),
+    #caixas pequenas
+    pygame.Rect(325, 708, 5, 6), 
+    pygame.Rect(358, 697, 10, 6), 
+    pygame.Rect(442, 482, 10, 20),
+    pygame.Rect(478, 459, 10, 20),
+    pygame.Rect(851, 553, 10, 20),
+    pygame.Rect(885, 525, 10, 20),
+    pygame.Rect(1060, 182, 15, 8),
+    pygame.Rect(1097, 154, 15, 8),
+    pygame.Rect(1144, 750, 5, 1),
+    #bancos
+    pygame.Rect(423, 212, 75, 5),
+    pygame.Rect(958, 695, 75, 5),
+    #fonte - nao existe um pygame.circle ent tive q fazer um retangulo aproximado, colisao c circulo é mais complicado
+    pygame.Rect(864, 226, 57, 38),
+
+    pygame.Rect(185, 197, 115, 105),  #casa azul
+    pygame.Rect(1177, 0, 143, 147),   #casa marrom parte direita em cima
+    pygame.Rect(100, 500, 120, 155),  #casa marrom parte esquerda baixo
+    pygame.Rect(227, 650, 39, 1),     #cerca casa marrom parte esquerda baixo
+    pygame.Rect(1184, 550, 120, 120), #casa verde
+    pygame.Rect(1140, 680, 30, 1),    #cerca casa verde
+    pygame.Rect(705, 705, 116, 100),  #casa marrom baixo
+    pygame.Rect(630, 590, 128, 15),   #tenda
+    pygame.Rect(753, 536, 7, 50),     #tenda
+    pygame.Rect(435, 125, 75, 20),    #casinha marrom
+    pygame.Rect(636, 793, 20, 1),     #cerca
+    pygame.Rect(1117, 480, 20, 1)     #cerca
+    ]
+
+
 
 class Personagem():
     def __init__(self, x, y, vel, teclas, sprite):
@@ -86,33 +125,63 @@ class Personagem():
             self.controles_invertidos = False
             
         if not self.controles_invertidos:
-            if teclas[self.esq]:
+            if teclas[self.esq]: 
                 self.rect.x -= self.vel
-            if teclas[self.dir]:
+            if teclas[self.dir]: 
                 self.rect.x += self.vel
-            if teclas[self.cima]:
-                self.rect.y -= self.vel
-            if teclas[self.baixo]:
-                self.rect.y += self.vel
-
         else:
-            if teclas[self.esq]:
+            if teclas[self.esq]: 
                 self.rect.x += self.vel
-            if teclas[self.dir]:
+            if teclas[self.dir]: 
                 self.rect.x -= self.vel
-            if teclas[self.cima]:
+
+        # checa colisao no eixo X e corrige
+        for obstaculo in obstaculos:
+            if self.rect.colliderect(obstaculo):
+                if not self.controles_invertidos:
+                    if teclas[self.dir]: 
+                        self.rect.right = obstaculo.left
+                    if teclas[self.esq]: 
+                        self.rect.left  = obstaculo.right
+                else:
+                    if teclas[self.esq]: 
+                        self.rect.right = obstaculo.left
+                    if teclas[self.dir]: 
+                        self.rect.left  = obstaculo.right
+
+        # move no eixo Y
+        if not self.controles_invertidos:
+            if teclas[self.cima]:  
+                self.rect.y -= self.vel
+            if teclas[self.baixo]: 
                 self.rect.y += self.vel
-            if teclas[self.baixo]:
+        else:
+            if teclas[self.cima]:  
+                self.rect.y += self.vel
+            if teclas[self.baixo]: 
                 self.rect.y -= self.vel
 
-        if self.rect.x >= largura - 48:
+        # checa colisao no eixo Y e corrige
+        for obstaculo in obstaculos:
+            if self.rect.colliderect(obstaculo):
+                if not self.controles_invertidos:
+                    if teclas[self.baixo]: 
+                        self.rect.bottom = obstaculo.top
+                    if teclas[self.cima]:  
+                        self.rect.top    = obstaculo.bottom
+                else:
+                    if teclas[self.cima]:  
+                        self.rect.bottom = obstaculo.top
+                    if teclas[self.baixo]: 
+                        self.rect.top    = obstaculo.bottom
+            
+        if self.rect.x >= largura - 48: 
             self.rect.x = largura - 48
-        if self.rect.x <= 0:
+        if self.rect.x <= 0:            
             self.rect.x = 0
-        
-        if self.rect.y >= altura - 48:
+        if self.rect.y >= altura - 48:  
             self.rect.y = altura - 48
-        if self.rect.y <= 0:
+        if self.rect.y <= 0:           
             self.rect.y = 0
 
 
@@ -139,10 +208,15 @@ class Coletavel():
 margem_do_mapa = 30 #valor aleatorio so pra colocar no codigo
 
 def posicao_coletavel_aleatoria():
-    x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
-    y = randint(50, altura - margem_do_mapa - 25)
-    return x, y
-
+    posicao_valida = False
+    while not posicao_valida:
+        x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
+        y = randint(50, altura - margem_do_mapa - 25)
+        rect_coletavel = pygame.Rect(x, y, 25, 25)
+        if not any(rect_coletavel.colliderect(obstaculo) for obstaculo in obstaculos): 
+            posicao_valida = True
+            return x, y
+        
 
 def spawnar_easter_eggs():
     lista_easter_eggs = []
@@ -375,25 +449,10 @@ def mostrar_quantidade_coletaveis(surf):
         surf.blit(texto_quantidade, (10, 10))
 
 def desenhar_game_over(surf):
-    surf.fill((0, 0, 0))
-    texto_game_over = fonte_game_over.render("GAME OVER", False, (255, 0, 0))
-    texto_restart = fonte.render("aperte R para recomeçar", True, (255, 0, 0))
-
-    surf.blit(texto_game_over, (largura // 2 - texto_game_over.get_width() // 2, altura // 2 - 20))
-
-    surf.blit(texto_restart, (largura // 2 - texto_restart.get_width() // 2, altura // 2 + 20))
+    surf.blit(tela_derrota, (0, 0))
 
 def desenhar_vitoria(surf):
-    global fonte_game_over
-
-    surf.fill((0, 0, 0))
-
-    texto_vitoria = fonte_game_over.render("VICTORY!", True, (0, 255, 0))
-    texto_restart = fonte.render("aperte R para recomeçar", True, (0, 255, 0))
-
-    surf.blit(texto_vitoria, (largura // 2 - texto_vitoria.get_width() // 2, altura // 2 - 60))
-
-    surf.blit(texto_restart, (largura // 2 - texto_restart.get_width() // 2, altura // 2 + 20))
+    surf.blit(tela_vitoria, (0, 0))
 
 def reiniciar_jogo():
     global game_over, vitoria
@@ -454,34 +513,6 @@ def reiniciar_jogo():
 
     coletaveis_totais_naopegos = (easter_eggs_nao_pegos + normais_ativos)
     
-'''coletaveis_nivel1 = [Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/and.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",        "assets/sprites/nand.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",         "assets/sprites/not.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Portas Lógicas",          "assets/sprites/or.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
-
-coletaveis_nivel2 = [
-    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",         "assets/sprites/mux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",        "assets/sprites/dmux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",         "assets/sprites/mux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Combinacionais",        "assets/sprites/dmux.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
-
-coletaveis_nivel3 = [
-    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "FlipFlop",    "assets/sprites/flipflop.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Cerveja Alemã",    "assets/sprites/cervejaalema.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "Gaita de Fole",    "assets/sprites/gaita.png"),
-    Coletavel(*posicao_coletavel_aleatoria(), "APS",    "assets/sprites/aps.png"),]
-
-#o * serve para desempacotar a tupla, invés de trazer ela assim (x,y) traz ela assim x,y (finalmente pode usar isso sem restrição das listas)
-'''
 
 Fred = Personagem(
     x=100, y=200,
@@ -502,7 +533,15 @@ Stefan = Personagem(
 mapa = pygame.image.load('assets/sprites/mapa.png').convert()
 mapa = pygame.transform.scale(mapa, (largura, altura))
 
+tela_vitoria = pygame.image.load('assets/sprites/tela_vitoria.png').convert()
+tela_vitoria = pygame.transform.scale(tela_vitoria, (largura, altura))
+
+tela_derrota = pygame.image.load('assets/sprites/tela_derrota.png').convert()
+tela_derrota = pygame.transform.scale(tela_derrota, (largura, altura))
+
 while True:
+    pos_mouse = pygame.mouse.get_pos()
+    print(pos_mouse)
     clock.tick(60)
     tela.blit(mapa, (0, 0))
     for event in pygame.event.get():
