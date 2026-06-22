@@ -548,8 +548,6 @@ tela_inicio = pygame.image.load("assets/sprites/tela_inicio.png").convert()
 tela_inicio = pygame.transform.scale(tela_inicio, (largura, altura))
 
 while True:
-    pos_mouse = pygame.mouse.get_pos()
-    print(pos_mouse)
     clock.tick(60)
     tela.blit(mapa, (0, 0))
     for event in pygame.event.get():
