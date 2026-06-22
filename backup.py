@@ -16,15 +16,15 @@ altura = 800
 
 #nivel 1 - portas logicas
 nivel1_completo = False
-meta_portas = 4
+meta_portas = 3
 
 #nivel 2 - mux e demux
 nivel2_completo = False
-meta_mux = 2
-meta_demux = 2
+meta_combinacional = 3
+
 #nivel 3 - flip-flops
 nivel3_completo = False
-meta_flipflops = 4
+meta_flipflops = 3
 
 nivel_anterior = 0
 
@@ -41,53 +41,15 @@ fonte_game_over = pygame.font.SysFont('Arial', 40, True)
 tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
 limite = 70 * 1000  #2 minutos em milissegundos
 
-inventario = {"Portas Lógicas": 0, "MUX": 0, "DEMUX": 0, "FlipFlop": 0}
+inventario = {"Portas Lógicas": 0, "Combinacionais": 0, "FlipFlop": 0}
 
 easter_eggs = [("Cerveja Alemã", "assets/sprites/cervejaalema.png"), ("Gaita de Fole", "assets/sprites/gaita.png"), ("APS", "assets/sprites/aps.png")]
 
 portas = [("Portas Lógicas", "assets/sprites/and.png"), ("Portas Lógicas", "assets/sprites/nand.png"), ("Portas Lógicas", "assets/sprites/not.png"), ("Portas Lógicas", "assets/sprites/or.png")]
 
-combinacionais = [("MUX", "assets/sprites/mux.png"), ("DEMUX", "assets/sprites/dmux.png")]
+combinacionais = [("Combinacionais", "assets/sprites/mux.png"), ("Combinacionais", "assets/sprites/dmux.png")]
 
 flipflops = [("FlipFlop", "assets/sprites/flipflop.png")]
-
-portas_restantes = []
-combinacionais_restantes = []
-flipflops_restantes = []
-
-combinacionais_restantes = [
-    ("MUX", "assets/sprites/mux.png"),
-    ("MUX", "assets/sprites/mux.png"),
-    ("DEMUX", "assets/sprites/dmux.png"),
-    ("DEMUX", "assets/sprites/dmux.png")
-    ]
-
-obstaculos = [
-    pygame.Rect(0, 335, 50, 40),  #parte esquerda do rio
-    pygame.Rect(105, 335, 460, 40),  #parte pós primeira ponte do rio
-    pygame.Rect(615, 337, 540, 40),  #parte poós segunda ponte do rio
-    pygame.Rect(1210, 337, 330, 40), #parte direita do rio
-    #caixas maiores
-    pygame.Rect(849, 695, 43, 54),
-    pygame.Rect(1128, 258, 24, 35),
-    #caixas pequenas
-    pygame.Rect(312, 698, 27, 42), 
-    pygame.Rect(358, 685, 27, 42), 
-    pygame.Rect(442, 482, 27, 42),
-    pygame.Rect(478, 459, 27, 42),
-    pygame.Rect(851, 553, 27, 42),
-    pygame.Rect(885, 525, 27, 42),
-    pygame.Rect(1056, 182, 27, 42),
-    pygame.Rect(1097, 154, 20, 20),
-    pygame.Rect(1142, 735, 20, 20),
-    #bancos
-    pygame.Rect(423, 202, 82, 30),
-    pygame.Rect(958, 685, 82, 30),
-    #fonte - nao existe um pygame.circle ent tive q fazer um retangulo aproximado, colisao c circulo é mais complicado
-    pygame.Rect(864, 226, 57, 38)
-    ]
-
-
 
 class Personagem():
     def __init__(self, x, y, vel, teclas, sprite):
@@ -112,63 +74,33 @@ class Personagem():
             self.controles_invertidos = False
             
         if not self.controles_invertidos:
-            if teclas[self.esq]: 
+            if teclas[self.esq]:
                 self.rect.x -= self.vel
-            if teclas[self.dir]: 
+            if teclas[self.dir]:
                 self.rect.x += self.vel
-        else:
-            if teclas[self.esq]: 
-                self.rect.x += self.vel
-            if teclas[self.dir]: 
-                self.rect.x -= self.vel
-
-        # checa colisao no eixo X e corrige
-        for obstaculo in obstaculos:
-            if self.rect.colliderect(obstaculo):
-                if not self.controles_invertidos:
-                    if teclas[self.dir]: 
-                        self.rect.right = obstaculo.left
-                    if teclas[self.esq]: 
-                        self.rect.left  = obstaculo.right
-                else:
-                    if teclas[self.esq]: 
-                        self.rect.right = obstaculo.left
-                    if teclas[self.dir]: 
-                        self.rect.left  = obstaculo.right
-
-        # move no eixo Y
-        if not self.controles_invertidos:
-            if teclas[self.cima]:  
+            if teclas[self.cima]:
                 self.rect.y -= self.vel
-            if teclas[self.baixo]: 
+            if teclas[self.baixo]:
                 self.rect.y += self.vel
+
         else:
-            if teclas[self.cima]:  
+            if teclas[self.esq]:
+                self.rect.x += self.vel
+            if teclas[self.dir]:
+                self.rect.x -= self.vel
+            if teclas[self.cima]:
                 self.rect.y += self.vel
-            if teclas[self.baixo]: 
+            if teclas[self.baixo]:
                 self.rect.y -= self.vel
 
-        # checa colisao no eixo Y e corrige
-        for obstaculo in obstaculos:
-            if self.rect.colliderect(obstaculo):
-                if not self.controles_invertidos:
-                    if teclas[self.baixo]: 
-                        self.rect.bottom = obstaculo.top
-                    if teclas[self.cima]:  
-                        self.rect.top    = obstaculo.bottom
-                else:
-                    if teclas[self.cima]:  
-                        self.rect.bottom = obstaculo.top
-                    if teclas[self.baixo]: 
-                        self.rect.top    = obstaculo.bottom
-            
-        if self.rect.x >= largura - 48: 
+        if self.rect.x >= largura - 48:
             self.rect.x = largura - 48
-        if self.rect.x <= 0:            
+        if self.rect.x <= 0:
             self.rect.x = 0
-        if self.rect.y >= altura - 48:  
+        
+        if self.rect.y >= altura - 48:
             self.rect.y = altura - 48
-        if self.rect.y <= 0:           
+        if self.rect.y <= 0:
             self.rect.y = 0
 
 
@@ -183,7 +115,6 @@ class Coletavel():
         self.rect = pygame.Rect(x, y, 25, 25)
         self.tipo = tipo
         self.sprite = pygame.image.load(sprite).convert_alpha()
-        self.caminho_sprite = sprite
         self.naopego = True
 
     
@@ -195,15 +126,10 @@ class Coletavel():
 margem_do_mapa = 30 #valor aleatorio so pra colocar no codigo
 
 def posicao_coletavel_aleatoria():
-    posicao_valida = False
-    while not posicao_valida:
-        x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
-        y = randint(50, altura - margem_do_mapa - 25)
-        rect_coletavel = pygame.Rect(x, y, 25, 25)
-        if not any(rect_coletavel.colliderect(obstaculo) for obstaculo in obstaculos): 
-            posicao_valida = True
-            return x, y
-        
+    x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
+    y = randint(50, altura - margem_do_mapa - 25)
+    return x, y
+
 
 def spawnar_easter_eggs():
     lista_easter_eggs = []
@@ -227,8 +153,7 @@ def spawnar_dois_coletaveis(lista_coletaveis):
 
 
 easter_eggs_nao_pegos = spawnar_easter_eggs()
-portas_restantes = portas.copy()
-normais_ativos = spawnar_dois_coletaveis(portas_restantes)
+normais_ativos = spawnar_dois_coletaveis(portas)
 
 coletaveis_totais_naopegos = easter_eggs_nao_pegos + normais_ativos
 
@@ -264,41 +189,23 @@ def ocorreu_colisoes(personagem, coletaveis):
                 inventario[coletavel.tipo] += 1
 
                 if coletavel.tipo == 'Portas Lógicas':
-                    remover_do_pool( coletavel.tipo, coletavel.caminho_sprite, portas_restantes)
-
-                    if inventario["Portas Lógicas"] >= 4:
+                    if inventario['Portas Lógicas'] >= meta_portas:
                         nivel1_completo = True
-                    
+
                     else:
-                        manter_dois_coletaveis(portas_restantes)
+                        novos_coletaveis = spawnar_dois_coletaveis(portas)
+                        normais_ativos += novos_coletaveis
+                        coletaveis_totais_naopegos += novos_coletaveis
 
-                elif coletavel.tipo == "MUX":
-
-                    remover_do_pool(
-                        coletavel.tipo,
-                        coletavel.caminho_sprite,
-                        combinacionais_restantes
-                    )
-
-                    if inventario["MUX"] >= 2 and inventario["DEMUX"] >= 2:
+                elif coletavel.tipo == 'Combinacionais':
+                    if inventario["Combinacionais"] >= meta_combinacional:
                         nivel2_completo = True
+
                     else:
-                        manter_dois_coletaveis(combinacionais_restantes)
+                        novos_coletaveis = spawnar_dois_coletaveis(combinacionais)
+                        normais_ativos += novos_coletaveis
+                        coletaveis_totais_naopegos += novos_coletaveis
 
-
-                elif coletavel.tipo == "DEMUX":
-
-                    remover_do_pool(
-                        coletavel.tipo,
-                        coletavel.caminho_sprite,
-                        combinacionais_restantes
-                    )
-
-                    if inventario["MUX"] >= 2 and inventario["DEMUX"] >= 2:
-                        nivel2_completo = True
-                    else:
-                        manter_dois_coletaveis(combinacionais_restantes)
-                        
                 elif coletavel.tipo == 'FlipFlop':
                     if inventario['FlipFlop'] >= meta_flipflops:
                         nivel3_completo = True
@@ -310,74 +217,22 @@ def ocorreu_colisoes(personagem, coletaveis):
 
 
 def atualizar_coletaveis_ao_mudar_nivel():
-    global coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos, combinacionais_restantes
-     
+    global coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos
+
     easter_eggs_nao_pegos = spawnar_easter_eggs()
 
     if not nivel1_completo:
-        normais_ativos = spawnar_dois_coletaveis(portas_restantes)
+        normais_ativos = spawnar_dois_coletaveis(portas)
 
     elif not nivel2_completo:
-        combinacionais_restantes = [
-            ("MUX", "assets/sprites/mux.png"),
-            ("MUX", "assets/sprites/mux.png"),
-            ("DEMUX", "assets/sprites/dmux.png"),
-            ("DEMUX", "assets/sprites/dmux.png")
-        ]
-
-        normais_ativos = spawnar_dois_coletaveis(combinacionais_restantes)
+        normais_ativos = spawnar_dois_coletaveis(combinacionais)
 
     elif not nivel3_completo:
         normais_ativos = spawnar_dois_coletaveis(flipflops)
 
     coletaveis_totais_naopegos = normais_ativos + easter_eggs_nao_pegos
 
-#limpar as listas de coletaveis para o próximo nível
-def remover_do_pool(tipo, sprite, pool):
-    for item in pool:
-        if item[0] == tipo and item[1] == sprite:
-            pool.remove(item)
-            break
-#garante que sempre haja 2 coletaveis do tipo necessário para o nível, mesmo que o jogador pegue um e não tenha mais no pool
-def manter_dois_coletaveis(pool):
-    global normais_ativos, coletaveis_totais_naopegos
 
-    ativos_visiveis = [
-        c for c in normais_ativos
-        if c.naopego
-    ]
-
-    while len(ativos_visiveis) < 2 and len(pool) > 0:
-
-        sprites_ativos = [
-            c.caminho_sprite
-            for c in ativos_visiveis
-        ]
-
-        candidatos = [
-            item
-            for item in pool
-            if item[1] not in sprites_ativos
-        ]
-
-        if len(candidatos) == 0:
-            break
-
-        tipo, sprite = random.choice(candidatos)   
-
-        x, y = posicao_coletavel_aleatoria()
-
-        novo = Coletavel(
-            x,
-            y,
-            tipo,
-            sprite
-        )
-
-        normais_ativos.append(novo)
-        coletaveis_totais_naopegos.append(novo)
-
-        ativos_visiveis.append(novo)
 
 def mostrar_quantidade_coletaveis(surf):
     if not nivel1_completo:
@@ -388,7 +243,8 @@ def mostrar_quantidade_coletaveis(surf):
     
     elif not nivel2_completo:
         nivel = 'Nível 2 - Combinacionais'
-        tipo = 'MUX'
+        tipo = 'Combinacionais'
+        meta = meta_combinacional
 
     
     elif not nivel3_completo:
@@ -406,29 +262,8 @@ def mostrar_quantidade_coletaveis(surf):
     surf.blit(texto, (largura // 2 - texto.get_width() // 2, 10))   #essa funcao get_width pega a largura do texto
 
     if tipo != 'nenhum':
-        if not nivel1_completo:
-            quantidade = inventario["Portas Lógicas"]
-            texto_quantidade = fonte.render(
-                f'Portas: {quantidade} / {meta_portas}',
-                True,
-                (255,255,255)
-            )
-
-        elif not nivel2_completo:
-            texto_quantidade = fonte.render(
-                f'MUX: {inventario["MUX"]}/2  |  DEMUX: {inventario["DEMUX"]}/2',
-                True,
-                (255,255,255)
-            )
-
-        elif not nivel3_completo:
-            quantidade = inventario["FlipFlop"]
-            texto_quantidade = fonte.render(
-                f'FlipFlops: {quantidade} / {meta_flipflops}',
-                True,
-                (255,255,255)
-            )
-
+        quantidade = inventario[tipo]
+        texto_quantidade = fonte.render(f'{tipo}: {quantidade} / {meta}', True, (255, 255, 255))
         surf.blit(texto_quantidade, (10, 10))
 
 def desenhar_game_over(surf):
@@ -473,8 +308,7 @@ def reiniciar_jogo():
 
     inventario = {
         "Portas Lógicas": 0,
-        "MUX": 0,
-        "DEMUX": 0,
+        "Combinacionais": 0,
         "FlipFlop": 0
     }
 
@@ -549,8 +383,6 @@ mapa = pygame.image.load('assets/sprites/mapa.png').convert()
 mapa = pygame.transform.scale(mapa, (largura, altura))
 
 while True:
-    pos_mouse = pygame.mouse.get_pos()
-    print(pos_mouse)
     clock.tick(60)
     tela.blit(mapa, (0, 0))
     for event in pygame.event.get():
