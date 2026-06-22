@@ -31,6 +31,8 @@ nivel_anterior = 0
 game_over = False
 vitoria = False
 
+tela_inicio = True
+
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")
 
@@ -38,8 +40,8 @@ clock = pygame.time.Clock()
 fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, quando a gente testar a gente troca
 fonte_game_over = pygame.font.SysFont('Arial', 40, True) 
 
-tempo_inicio = pygame.time.get_ticks()  #pega o tempo do inicio do jogo
-limite = 70 * 1000  #2 minutos em milissegundos
+tempo_inicio = None #none por causa da tela inicial
+limite = 70 * 1000  #1 minuto e 10 segundos em milissegundos
 
 inventario = {"Portas Lógicas": 0, "MUX": 0, "DEMUX": 0, "FlipFlop": 0}
 
@@ -454,6 +456,9 @@ def desenhar_game_over(surf):
 def desenhar_vitoria(surf):
     surf.blit(tela_vitoria, (0, 0))
 
+def desenhar_tela_inicio(surf):
+    surf.blit(tela_inicio, (0, 0))
+
 def reiniciar_jogo():
     global game_over, vitoria
     global nivel1_completo, nivel2_completo, nivel3_completo
@@ -539,6 +544,9 @@ tela_vitoria = pygame.transform.scale(tela_vitoria, (largura, altura))
 tela_derrota = pygame.image.load('assets/sprites/tela_derrota.png').convert()
 tela_derrota = pygame.transform.scale(tela_derrota, (largura, altura))
 
+tela_inicio = pygame.image.load("assets/sprites/tela_inicio.png").convert()
+tela_inicio = pygame.transform.scale(tela_inicio, (largura, altura))
+
 while True:
     pos_mouse = pygame.mouse.get_pos()
     print(pos_mouse)
@@ -550,10 +558,19 @@ while True:
             exit()
         
         if event.type == pygame.KEYDOWN:
-            if (game_over or vitoria) and event.key == pygame.K_r:
-                reiniciar_jogo()
+            if tela_inicio and event.key == pygame.K_SPACE:
+                tela_inicio = False
+                tempo_inicio = pygame.time.get_ticks()
 
-    if game_over:
+            elif (game_over or vitoria) and event.key == pygame.K_r:
+                reiniciar_jogo()
+    
+    if tela_inicio:
+        desenhar_tela_inicio(tela)
+        pygame.display.update()
+        continue
+
+    elif game_over:
         desenhar_game_over(tela)
         pygame.display.update()
         continue
@@ -578,27 +595,11 @@ while True:
             nivel_anterior = nivel_atual
             atualizar_coletaveis_ao_mudar_nivel()
 
+    if tempo_inicio is not None:
+        tempo_passado = pygame.time.get_ticks() - tempo_inicio
+    else:
+        tempo_passado = 0
 
-
-    '''if not nivel1_completo:
-        for coletavel in coletaveis_nivel1:
-            coletavel.desenhar(tela)
-        ocorreu_colisoes(Stefan, coletaveis_nivel1)
-        ocorreu_colisoes(Fred, coletaveis_nivel1)
-
-    elif not nivel2_completo:
-        for coletavel in coletaveis_nivel2:
-            coletavel.desenhar(tela)
-        ocorreu_colisoes(Stefan, coletaveis_nivel2)
-        ocorreu_colisoes(Fred, coletaveis_nivel2)
-
-    elif not nivel3_completo:
-        for coletavel in coletaveis_nivel3:
-            coletavel.desenhar(tela) 
-        ocorreu_colisoes(Stefan, coletaveis_nivel3)
-        ocorreu_colisoes(Fred, coletaveis_nivel3)'''
-
-    tempo_passado = pygame.time.get_ticks() - tempo_inicio
     tempo_restante = max(0, limite - tempo_passado) #o max evita tempo negativo
     
     segundos_restantes = tempo_restante // 1000
