@@ -215,7 +215,8 @@ def posicao_coletavel_aleatoria():
         x = randint (50, largura - margem_do_mapa - 25)   #o -25 vem da largura do coletavel
         y = randint(50, altura - margem_do_mapa - 25)
         rect_coletavel = pygame.Rect(x, y, 25, 25)
-        if not any(rect_coletavel.colliderect(obstaculo) for obstaculo in obstaculos): 
+        rect_checagem = rect_coletavel.inflate(10, 10) #para nao nascer colado no obstaculo (tava dando problema)
+        if not any(rect_checagem.colliderect(obstaculo) for obstaculo in obstaculos): 
             posicao_valida = True
             return x, y
         
