@@ -30,6 +30,7 @@ nivel_anterior = 0
 
 game_over = False
 vitoria = False
+tocou_som_vitoria = False      
 
 tela_inicio = True
 
@@ -41,7 +42,7 @@ fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, qua
 fonte_game_over = pygame.font.SysFont('Arial', 40, True) 
 
 tempo_inicio = None #none por causa da tela inicial
-limite = 70 * 1000  #1 minuto e 10 segundos em milissegundos
+limite = 35 * 1000  #35 segundos em milissegundos
 
 inventario = {"Portas Lógicas": 0, "MUX": 0, "DEMUX": 0, "FlipFlop": 0}
 
@@ -461,7 +462,7 @@ def desenhar_tela_inicio(surf):
     surf.blit(tela_inicio, (0, 0))
 
 def reiniciar_jogo():
-    global game_over, vitoria
+    global game_over, vitoria, tocou_som_vitoria
     global nivel1_completo, nivel2_completo, nivel3_completo
     global inventario
     global tempo_inicio
@@ -483,7 +484,7 @@ def reiniciar_jogo():
 
     game_over = False
     vitoria = False
-
+    tocou_som_vitoria = False
     nivel1_completo = False
     nivel2_completo = False
     nivel3_completo = False
@@ -513,7 +514,7 @@ def reiniciar_jogo():
     Stefan.controles_invertidos = False
 
     tempo_inicio = pygame.time.get_ticks()
-
+    musica_fundo.play(-1)
     easter_eggs_nao_pegos = spawnar_easter_eggs()
     normais_ativos = spawnar_dois_coletaveis(portas_restantes)
 
@@ -577,6 +578,10 @@ while True:
     elif vitoria:
         desenhar_vitoria(tela)
         pygame.display.update()
+        musica_fundo.stop()
+        if not tocou_som_vitoria: #o som toca apenas uma vez 
+            tocou_som_vitoria = True
+            som_vitoria.play(0)
         continue
 
     else:
