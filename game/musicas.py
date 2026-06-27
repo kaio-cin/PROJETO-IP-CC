@@ -19,4 +19,7 @@ barulho_cerveja = pygame.mixer.Sound('assets/sons/cerveja.mp3')
 barulho_cerveja.set_volume(1) 
 
 som_vitoria = pygame.mixer.Sound('assets/sons/som_vitoria.mp3') 
-som_vitoria.set_volume(1) 
+som_vitoria.set_volume(1)
+
+som_derrota = pygame.mixer.Sound('assets/sons/som_derrota.mp3')
+som_derrota.set_volume(1)

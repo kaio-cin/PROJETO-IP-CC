@@ -32,6 +32,7 @@ nivel_anterior = 0
 game_over = False
 vitoria = False
 tocou_som_vitoria = False      
+tocou_som_derrota = False
 
 tela_inicio = True
 
@@ -507,7 +508,7 @@ def desenhar_tela_inicio(surf):
     surf.blit(tela_inicio, (0, 0))
 
 def reiniciar_jogo():
-    global game_over, vitoria, tocou_som_vitoria
+    global game_over, vitoria, tocou_som_vitoria, tocou_som_derrota
     global nivel1_completo, nivel2_completo, nivel3_completo
     global inventario
     global tempo_inicio
@@ -530,6 +531,7 @@ def reiniciar_jogo():
     game_over = False
     vitoria = False
     tocou_som_vitoria = False
+    tocou_som_derrota = False
     nivel1_completo = False
     nivel2_completo = False
     nivel3_completo = False
@@ -618,6 +620,10 @@ while True:
     elif game_over:
         desenhar_game_over(tela)
         pygame.display.update()
+        musica_fundo.stop()
+        if not tocou_som_derrota:
+            tocou_som_derrota = True
+            som_derrota.play(0)
         continue
 
     elif vitoria:
