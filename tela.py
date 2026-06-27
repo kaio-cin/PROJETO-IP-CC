@@ -1,5 +1,6 @@
 import pygame 
 import random
+import os
 from random import randint
 from pygame.locals import *
 from sys import exit
@@ -103,22 +104,34 @@ obstaculos = [
     pygame.Rect(1117, 480, 20, 1)     #cerca
     ]
 
+def carregar_animacao(pasta):
+    arquivos = sorted(os.listdir(pasta))
 
+    return [pygame.image.load(os.path.join(pasta, arq)).convert_alpha() for arq in arquivos]
 
 class Personagem():
-    def __init__(self, x, y, vel, teclas, sprite):
+    def __init__(self, x, y, vel, teclas, pasta_animacoes):
         self.rect = pygame.Rect(x, y, 48, 64)
         self.vel = vel
         self.cima = teclas['cima']
         self.baixo = teclas['baixo']
         self.esq = teclas['esq']
-        self.dir = teclas['dir']
-        self.sprite = pygame.image.load(sprite).convert_alpha()
+        self.dir = teclas['dir']       
         self.vel_normal = vel
         self.vel_bonus = False
         self.fim_efeito_cerveja = 0
         self.controles_invertidos = False
-
+        #parte da animação de movimento do personagem
+        self.animacoes = {
+            "down": carregar_animacao(os.path.join(pasta_animacoes, "down")),
+            "up": carregar_animacao(os.path.join(pasta_animacoes, "up")),
+            "left": carregar_animacao(os.path.join(pasta_animacoes, "left")),
+            "right": carregar_animacao(os.path.join(pasta_animacoes, "right"))}
+        self.direcao = "down"
+        self.frame = 0
+        self.vel_animacao = 0.18
+        self.movendo = False
+        self.sprite = self.animacoes["down"][0] 
 
     def mover(self, teclas):
 
@@ -126,69 +139,101 @@ class Personagem():
             self.vel = self.vel_normal
             self.vel_bonus = False
             self.controles_invertidos = False
-            
+
+        self.movendo = False
+
         if not self.controles_invertidos:
-            if teclas[self.esq]: 
+            if teclas[self.esq]:
                 self.rect.x -= self.vel
-            if teclas[self.dir]: 
+                self.direcao = "left"
+                self.movendo = True
+
+            if teclas[self.dir]:
                 self.rect.x += self.vel
+                self.direcao = "right"
+                self.movendo = True
         else:
-            if teclas[self.esq]: 
+            if teclas[self.esq]:
                 self.rect.x += self.vel
-            if teclas[self.dir]: 
+                self.direcao = "left"
+                self.movendo = True
+
+            if teclas[self.dir]:
                 self.rect.x -= self.vel
+                self.direcao = "right"
+                self.movendo = True
 
         # checa colisao no eixo X e corrige
         for obstaculo in obstaculos:
             if self.rect.colliderect(obstaculo):
                 if not self.controles_invertidos:
-                    if teclas[self.dir]: 
+                    if teclas[self.dir]:
                         self.rect.right = obstaculo.left
-                    if teclas[self.esq]: 
-                        self.rect.left  = obstaculo.right
+                    if teclas[self.esq]:
+                        self.rect.left = obstaculo.right
                 else:
-                    if teclas[self.esq]: 
+                    if teclas[self.esq]:
                         self.rect.right = obstaculo.left
-                    if teclas[self.dir]: 
-                        self.rect.left  = obstaculo.right
+                    if teclas[self.dir]:
+                        self.rect.left = obstaculo.right
 
         # move no eixo Y
         if not self.controles_invertidos:
-            if teclas[self.cima]:  
+            if teclas[self.cima]:
                 self.rect.y -= self.vel
-            if teclas[self.baixo]: 
+                self.direcao = "up"
+                self.movendo = True
+
+            if teclas[self.baixo]:
                 self.rect.y += self.vel
+                self.direcao = "down"
+                self.movendo = True
         else:
-            if teclas[self.cima]:  
+            if teclas[self.cima]:
                 self.rect.y += self.vel
-            if teclas[self.baixo]: 
+                self.direcao = "up"
+                self.movendo = True
+
+            if teclas[self.baixo]:
                 self.rect.y -= self.vel
+                self.direcao = "down"
+                self.movendo = True
 
         # checa colisao no eixo Y e corrige
         for obstaculo in obstaculos:
             if self.rect.colliderect(obstaculo):
                 if not self.controles_invertidos:
-                    if teclas[self.baixo]: 
+                    if teclas[self.baixo]:
                         self.rect.bottom = obstaculo.top
-                    if teclas[self.cima]:  
-                        self.rect.top    = obstaculo.bottom
+                    if teclas[self.cima]:
+                        self.rect.top = obstaculo.bottom
                 else:
-                    if teclas[self.cima]:  
+                    if teclas[self.cima]:
                         self.rect.bottom = obstaculo.top
-                    if teclas[self.baixo]: 
-                        self.rect.top    = obstaculo.bottom
-            
-        if self.rect.x >= largura - 48: 
+                    if teclas[self.baixo]:
+                        self.rect.top = obstaculo.bottom
+
+        if self.rect.x >= largura - 48:
             self.rect.x = largura - 48
-        if self.rect.x <= 0:            
+        if self.rect.x <= 0:
             self.rect.x = 0
-        if self.rect.y >= altura - 48:  
+        if self.rect.y >= altura - 48:
             self.rect.y = altura - 48
-        if self.rect.y <= 0:           
+        if self.rect.y <= 0:
             self.rect.y = 0
 
 
-        
+    def atualizar_animacao(self):
+        if self.movendo:
+            self.frame += self.vel_animacao
+
+            if self.frame >= len(self.animacoes[self.direcao]):
+                self.frame = 0
+        else:
+            self.frame = 0
+
+        self.sprite = self.animacoes[self.direcao][int(self.frame)]
+
 
     def desenhar(self, surf):
         surf.blit(self.sprite, self.rect)
@@ -526,7 +571,7 @@ Fred = Personagem(
     vel=4,
     teclas={"cima": pygame.K_w, "baixo": pygame.K_s,
             "esq":  pygame.K_a, "dir":   pygame.K_d},
-    sprite="assets/sprites/fred.png"
+    pasta_animacoes="assets/sprites/Fred"
     )
 
 Stefan = Personagem(
@@ -534,7 +579,7 @@ Stefan = Personagem(
     vel=4,
     teclas={"cima": pygame.K_UP,   "baixo": pygame.K_DOWN,
             "esq":  pygame.K_LEFT, "dir":   pygame.K_RIGHT},
-    sprite="assets/sprites/stefan.png"
+    pasta_animacoes="assets/sprites/Stephan"
     )
 
 mapa = pygame.image.load('assets/sprites/mapa.png').convert()
@@ -630,7 +675,10 @@ while True:
             
     teclas = pygame.key.get_pressed()
     Fred.mover(teclas)
+    Fred.atualizar_animacao()
+    
     Stefan.mover(teclas)
+    Stefan.atualizar_animacao()
 
 
     Fred.desenhar(tela)
