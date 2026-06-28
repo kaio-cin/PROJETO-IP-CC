@@ -2,6 +2,8 @@ import pygame
 
 musica_fundo = pygame.mixer.Sound('assets/sons/musicafundo.mp3') 
 musica_fundo.set_volume(1) 
+musica_fundo.play(-1) #o -1 faz a musica tocar em loop
+
 
 barulho_gag = pygame.mixer.Sound('assets/sons/gag.mp3') 
 barulho_gag.set_volume(1) 
