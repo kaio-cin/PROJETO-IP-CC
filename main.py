@@ -12,7 +12,6 @@ from players import Fred, Stefan
 from funcoes import spawnar_dois_coletaveis, spawnar_easter_eggs, desenhar_game_over, desenhar_tela_inicio, desenhar_vitoria, atualizar_coletaveis_ao_mudar_nivel, ocorreu_colisoes, mostrar_quantidade_coletaveis, reiniciar_jogo
 
 easter_eggs_nao_pegos = spawnar_easter_eggs()
-portas_restantes = portas.copy()
 normais_ativos = spawnar_dois_coletaveis(portas_restantes)
 
 coletaveis_totais_naopegos = easter_eggs_nao_pegos + normais_ativos
@@ -26,53 +25,53 @@ while True:
             exit()
         
         if event.type == pygame.KEYDOWN:
-            if tela_inicio and event.key == pygame.K_SPACE:
-                tela_inicio = False
-                tempo_inicio = pygame.time.get_ticks()
+            if boleanas['tela_inicio'] and event.key == pygame.K_SPACE:
+                boleanas['tela_inicio'] = False
+                boleanas['tempo_inicio'] = pygame.time.get_ticks()
 
-            elif (game_over or vitoria) and event.key == pygame.K_r:
-                reiniciar_jogo()
+            elif (boleanas['game_over'] or boleanas['vitoria']) and event.key == pygame.K_r:
+                reiniciar_jogo(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos)
     
-    if tela_inicio:
+    if boleanas['tela_inicio']:
         desenhar_tela_inicio(tela)
         pygame.display.update()
         continue
 
-    elif game_over:
+    elif boleanas['game_over']:
         desenhar_game_over(tela)
         pygame.display.update()
         musica_fundo.stop()
-        if not tocou_som_derrota:
-            tocou_som_derrota = True
+        if not boleanas['tocou_som_derrota']:
+            boleanas['tocou_som_derrota'] = True
             som_derrota.play(0)
         continue
 
-    elif vitoria:
+    elif boleanas['vitoria']:
         desenhar_vitoria(tela)
         pygame.display.update()
         musica_fundo.stop()
-        if not tocou_som_vitoria: #o som toca apenas uma vez 
-            tocou_som_vitoria = True
+        if not boleanas['tocou_som_vitoria']: #o som toca apenas uma vez 
+            boleanas['tocou_som_vitoria'] = True
             som_vitoria.play(0)
         continue
 
     else:
-        if not nivel1_completo:
+        if not boleanas['nivel1_completo']:
             nivel_atual = 0
 
         else:
-            if not nivel2_completo:
+            if not boleanas['nivel2_completo']:
                 nivel_atual = 1
 
             else:
                 nivel_atual = 2
 
-        if nivel_atual != nivel_anterior:
-            nivel_anterior = nivel_atual
-            atualizar_coletaveis_ao_mudar_nivel()
+        if nivel_atual != boleanas['nivel_anterior']:
+            boleanas['nivel_anterior'] = nivel_atual
+            atualizar_coletaveis_ao_mudar_nivel(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos)
 
-    if tempo_inicio is not None:
-        tempo_passado = pygame.time.get_ticks() - tempo_inicio
+    if boleanas['tempo_inicio'] is not None:
+        tempo_passado = pygame.time.get_ticks() - boleanas['tempo_inicio']
     else:
         tempo_passado = 0
 
@@ -83,19 +82,19 @@ while True:
     minutos = segundos_restantes // 60
     segundos = segundos_restantes % 60
 
-    if tempo_restante == 0 and not (nivel1_completo and nivel2_completo and nivel3_completo):
-        game_over = True
+    if tempo_restante == 0 and not (boleanas['nivel1_completo'] and boleanas['nivel2_completo'] and boleanas['nivel3_completo']):
+        boleanas['game_over'] = True
 
-    if nivel1_completo and nivel2_completo and nivel3_completo:
-        vitoria = True
+    if boleanas['nivel1_completo'] and boleanas['nivel2_completo'] and boleanas['nivel3_completo']:
+        boleanas['vitoria'] = True
     
     texto_tempo = fonte.render(f'{minutos:02d}:{segundos:02d}', True, (255, 255, 255))
     
     pos_cronometro = (largura - 100, 10)
     tela.blit(texto_tempo, pos_cronometro)    #posição x=1350, y=10 (canto superior direito)
 
-    ocorreu_colisoes(Fred, coletaveis_totais_naopegos)
-    ocorreu_colisoes(Stefan, coletaveis_totais_naopegos)
+    ocorreu_colisoes(Fred, coletaveis_totais_naopegos, normais_ativos)
+    ocorreu_colisoes(Stefan, coletaveis_totais_naopegos, normais_ativos)
 
     for coletavel in coletaveis_totais_naopegos:
         coletavel.desenhar(tela)

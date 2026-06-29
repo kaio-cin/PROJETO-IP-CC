@@ -3,11 +3,12 @@ import pygame
 import os
 import random
 from random import randint
-from constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes ,metas, flipflops, fonte, portas
+from constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes,combinacionais_restantes ,metas, flipflops, fonte, portas, boleanas
 from classes import Coletavel
 from players import Fred, Stefan
 from tela import tela_derrota, tela_inicio, tela_vitoria
 from game.musicas import musica_fundo
+
 
 
 def posicao_coletavel_aleatoria():
@@ -33,7 +34,6 @@ def spawnar_easter_eggs():
 
 def spawnar_dois_coletaveis(lista_coletaveis):
     lista_coletaveis_escolhidos = []
-    
     escolhidos = random.sample(lista_coletaveis, min(2, len(lista_coletaveis)))
 
     for tipo, sprite in escolhidos:
@@ -42,12 +42,9 @@ def spawnar_dois_coletaveis(lista_coletaveis):
 
     return lista_coletaveis_escolhidos
 
-def ocorreu_colisoes(personagem, coletaveis):
-    from constantes import tempo_inicio
-    global nivel1_completo, nivel2_completo, nivel3_completo
-    global coletaveis_totais_naopegos, normais_ativos
+def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
 
-    for coletavel in coletaveis:
+    for coletavel in coletaveis_totais_naopegos:
         from game.musicas import barulho_aps, barulho_cerveja, barulho_fechei, barulho_gag, barulho_gaita
         
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
@@ -55,10 +52,10 @@ def ocorreu_colisoes(personagem, coletaveis):
             
             if coletavel.tipo ==  "Gaita de Fole":
                 barulho_gaita.play()
-                tempo_inicio += 10 * 1000 #aumenta o tempo restante em 10 segundos
+                boleanas['tempo_inicio'] += 10 * 1000 #aumenta o tempo restante em 10 segundos
             elif coletavel.tipo == 'APS':
                 barulho_aps.play()
-                tempo_inicio -= 10 * 1000
+                boleanas['tempo_inicio'] -= 10 * 1000
 
             elif coletavel.tipo == 'Cerveja Alemã':
                 barulho_cerveja.play()
@@ -79,10 +76,9 @@ def ocorreu_colisoes(personagem, coletaveis):
                     remover_do_pool( coletavel.tipo, coletavel.caminho_sprite, portas_restantes)
 
                     if inventario["Portas Lógicas"] >= 4:
-                        nivel1_completo = True
-                    
+                        boleanas['nivel1_completo'] = True
                     else:
-                        manter_dois_coletaveis(portas_restantes)
+                        manter_dois_coletaveis(portas_restantes, normais_ativos, coletaveis_totais_naopegos)
 
                 elif coletavel.tipo == "MUX":
 
@@ -93,9 +89,9 @@ def ocorreu_colisoes(personagem, coletaveis):
                     )
 
                     if inventario["MUX"] >= 2 and inventario["DEMUX"] >= 2:
-                        nivel2_completo = True
+                        boleanas['nivel2_completo'] = True
                     else:
-                        manter_dois_coletaveis(combinacionais_restantes)
+                        manter_dois_coletaveis(combinacionais_restantes, normais_ativos, coletaveis_totais_naopegos)
 
 
                 elif coletavel.tipo == "DEMUX":
@@ -107,13 +103,13 @@ def ocorreu_colisoes(personagem, coletaveis):
                     )
 
                     if inventario["MUX"] >= 2 and inventario["DEMUX"] >= 2:
-                        nivel2_completo = True
+                        boleanas['nivel2_completo'] = True
                     else:
-                        manter_dois_coletaveis(combinacionais_restantes)
+                        manter_dois_coletaveis(combinacionais_restantes, normais_ativos, coletaveis_totais_naopegos)
                         
                 elif coletavel.tipo == 'FlipFlop':
                     if inventario['FlipFlop'] >= metas['meta_flipflops']:
-                        nivel3_completo = True
+                        boleanas['nivel3_completo'] = True
 
                     else:
                         novos_coletaveis = spawnar_dois_coletaveis(flipflops)
@@ -122,28 +118,29 @@ def ocorreu_colisoes(personagem, coletaveis):
 
 
 
-def atualizar_coletaveis_ao_mudar_nivel():
-    global coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos, combinacionais_restantes
-     
-    easter_eggs_nao_pegos = spawnar_easter_eggs()
+def atualizar_coletaveis_ao_mudar_nivel(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos):
+    global combinacionais_restantes
+    from constantes import boleanas
+    easter_eggs_nao_pegos[:] = spawnar_easter_eggs()
 
-    if not nivel1_completo:
-        normais_ativos = spawnar_dois_coletaveis(portas_restantes)
+    if not boleanas['nivel1_completo']:
+        normais_ativos[:] = spawnar_dois_coletaveis(portas_restantes)
 
-    elif not nivel2_completo:
+    elif not boleanas['nivel2_completo']:
         combinacionais_restantes = [
             ("MUX", "assets/sprites/mux.png"),
             ("MUX", "assets/sprites/mux.png"),
             ("DEMUX", "assets/sprites/dmux.png"),
             ("DEMUX", "assets/sprites/dmux.png")
         ]
+        normais_ativos[:] = spawnar_dois_coletaveis(combinacionais_restantes)
+       
 
-        normais_ativos = spawnar_dois_coletaveis(combinacionais_restantes)
 
-    elif not nivel3_completo:
-        normais_ativos = spawnar_dois_coletaveis(flipflops)
+    elif not boleanas['nivel3_completo']:
+        normais_ativos[:] = spawnar_dois_coletaveis(flipflops)
 
-    coletaveis_totais_naopegos = normais_ativos + easter_eggs_nao_pegos
+    coletaveis_totais_naopegos[:] = normais_ativos + easter_eggs_nao_pegos
 
 #limpar as listas de coletaveis para o próximo nível
 def remover_do_pool(tipo, sprite, pool):
@@ -152,30 +149,19 @@ def remover_do_pool(tipo, sprite, pool):
             pool.remove(item)
             break
 #garante que sempre haja 2 coletaveis do tipo necessário para o nível, mesmo que o jogador pegue um e não tenha mais no pool
-def manter_dois_coletaveis(pool):
-    global normais_ativos, coletaveis_totais_naopegos
+def manter_dois_coletaveis(pool, normais_ativos, coletaveis_totais_naopegos):
     
     normais_ativos[:] = [c for c in normais_ativos if c.naopego]
 
-    ativos_visiveis = [
-        c for c in normais_ativos
-        if c.naopego
-    ]
+    ativos_visiveis = [c for c in normais_ativos if c.naopego]
 
     coletaveis_totais_naopegos[:] = [c for c in coletaveis_totais_naopegos if c.naopego]
 
     while len(ativos_visiveis) < 2 and len(pool) > 0:
 
-        sprites_ativos = [
-            c.caminho_sprite
-            for c in ativos_visiveis
-        ]
+        sprites_ativos = [ c.caminho_sprite for c in ativos_visiveis]
 
-        candidatos = [
-            item
-            for item in pool
-            if item[1] not in sprites_ativos
-        ]
+        candidatos = [item for item in pool if item[1] not in sprites_ativos]
 
         if len(candidatos) == 0:
             break
@@ -184,12 +170,7 @@ def manter_dois_coletaveis(pool):
 
         x, y = posicao_coletavel_aleatoria()
 
-        novo = Coletavel(
-            x,
-            y,
-            tipo,
-            sprite
-        )
+        novo = Coletavel(x, y, tipo, sprite)
 
         normais_ativos.append(novo)
         coletaveis_totais_naopegos.append(novo)
@@ -197,19 +178,18 @@ def manter_dois_coletaveis(pool):
         ativos_visiveis.append(novo)
 
 def mostrar_quantidade_coletaveis(surf):
-    from constantes import nivel1_completo, nivel2_completo, nivel3_completo
-    if not nivel1_completo:
+    if not boleanas['nivel1_completo']:
         nivel = 'Nível 1 - Portas Lógicas'
         tipo = 'Portas Lógicas'
         meta = metas['meta_portas']
 
     
-    elif not nivel2_completo:
+    elif not boleanas['nivel2_completo']:
         nivel = 'Nível 2 - Combinacionais'
         tipo = 'MUX'
 
     
-    elif not nivel3_completo:
+    elif not boleanas['nivel3_completo']:
         nivel = 'Nível 3 - Sequenciais'
         tipo = 'FlipFlop'
         meta = metas['meta_flipflops']
@@ -224,7 +204,7 @@ def mostrar_quantidade_coletaveis(surf):
     surf.blit(texto, (largura // 2 - texto.get_width() // 2, 10))   #essa funcao get_width pega a largura do texto
 
     if tipo != 'nenhum':
-        if not nivel1_completo:
+        if not boleanas['nivel1_completo']:
             quantidade = inventario["Portas Lógicas"]
             texto_quantidade = fonte.render(
                 f'Portas: {quantidade} / {metas['meta_portas']}',
@@ -232,14 +212,14 @@ def mostrar_quantidade_coletaveis(surf):
                 (255,255,255)
             )
 
-        elif not nivel2_completo:
+        elif not boleanas['nivel2_completo']:
             texto_quantidade = fonte.render(
                 f'MUX: {inventario["MUX"]}/2  |  DEMUX: {inventario["DEMUX"]}/2',
                 True,
                 (255,255,255)
             )
 
-        elif not nivel3_completo:
+        elif not boleanas['nivel3_completo']:
             quantidade = inventario["FlipFlop"]
             texto_quantidade = fonte.render(
                 f'FlipFlops: {quantidade} / {metas['meta_flipflops']}',
@@ -259,62 +239,42 @@ def desenhar_tela_inicio(surf):
     surf.blit(tela_inicio, (0, 0))
 
 
-def reiniciar_jogo():
-    global game_over, vitoria, tocou_som_vitoria, tocou_som_derrota
-    global nivel1_completo, nivel2_completo, nivel3_completo
-    global inventario
-    global tempo_inicio
-    global coletaveis_totais_naopegos
-    global normais_ativos
-    global easter_eggs_nao_pegos
-    global nivel_anterior
-    global portas_restantes
-    global combinacionais_restantes
-
-    portas_restantes = portas.copy()
-
-    combinacionais_restantes = [
+def reiniciar_jogo(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos):
+    global portas_restantes, combinacionais_restantes
+    
+    portas_restantes[:] = portas.copy()
+    combinacionais_restantes[:] = [
         ("MUX", "assets/sprites/mux.png"),
         ("MUX", "assets/sprites/mux.png"),
         ("DEMUX", "assets/sprites/dmux.png"),
         ("DEMUX", "assets/sprites/dmux.png")
     ]
 
-    game_over = False
-    vitoria = False
-    tocou_som_vitoria = False
-    tocou_som_derrota = False
-    nivel1_completo = False
-    nivel2_completo = False
-    nivel3_completo = False
+    boleanas['game_over'] = False
+    boleanas['vitoria'] = False
+    boleanas['tocou_som_vitoria'] = False
+    boleanas['tocou_som_derrota'] = False
+    boleanas['nivel1_completo'] = False
+    boleanas['nivel2_completo'] = False
+    boleanas['nivel3_completo'] = False
+    boleanas['nivel_anterior'] = 0
 
-    nivel_anterior = 0
+    inventario["Portas Lógicas"] = 0
+    inventario["MUX"] = 0
+    inventario["DEMUX"] = 0
+    inventario["FlipFlop"] = 0
 
-    inventario = {
-        "Portas Lógicas": 0,
-        "MUX": 0,
-        "DEMUX": 0,
-        "FlipFlop": 0
-    }
-
-    Fred.rect.x = 100
-    Fred.rect.y = 200
-
-    Stefan.rect.x = 600
-    Stefan.rect.y = 200
+    Fred.rect.x, Fred.rect.y = 100, 200
+    Stefan.rect.x, Stefan.rect.y = 600, 200
 
     Fred.vel = Fred.vel_normal
     Stefan.vel = Stefan.vel_normal
+    Fred.vel_bonus = Stefan.vel_bonus = False
+    Fred.controles_invertidos = Stefan.controles_invertidos = False
 
-    Fred.vel_bonus = False
-    Stefan.vel_bonus = False
-
-    Fred.controles_invertidos = False
-    Stefan.controles_invertidos = False
-
-    tempo_inicio = pygame.time.get_ticks()
+    boleanas['tempo_inicio'] = pygame.time.get_ticks()
     musica_fundo.play(-1)
-    easter_eggs_nao_pegos = spawnar_easter_eggs()
-    normais_ativos = spawnar_dois_coletaveis(portas_restantes)
 
-    coletaveis_totais_naopegos = (easter_eggs_nao_pegos + normais_ativos)
+    easter_eggs_nao_pegos[:] = spawnar_easter_eggs()
+    normais_ativos[:] = spawnar_dois_coletaveis(portas_restantes)
+    coletaveis_totais_naopegos[:] = easter_eggs_nao_pegos + normais_ativos

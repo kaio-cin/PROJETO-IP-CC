@@ -9,26 +9,21 @@ metas = {
 
 }
 
-#boleana
+#boleanas
 #nivel 1 - portas logicas
-nivel1_completo = False
-
-
+boleanas = {
+'nivel1_completo' : False,
 #nivel 2 - mux e demux
-nivel2_completo = False
-
+'nivel2_completo' : False,
 #nivel 3 - flip-flops
-nivel3_completo = False
-
-nivel_anterior = 0
-
-game_over = False
-vitoria = False
-tocou_som_vitoria = False      
-tocou_som_derrota = False
-
-tela_inicio = True
-
+'nivel3_completo' : False,
+'nivel_anterior' : 0,
+'game_over' : False,
+'vitoria' : False,
+'tocou_som_vitoria' : False,
+'tocou_som_derrota' : False,
+'tela_inicio' : True
+}
 
 #MEDIDAS
 largura = 1550
@@ -36,7 +31,7 @@ altura = 800
 fonte = pygame.font.SysFont('Arial', 20, True) #tamanho aleatório de fonte, quando a gente testar a gente troca
 fonte_game_over = pygame.font.SysFont('Arial', 40, True) 
 clock = pygame.time.Clock()
-tempo_inicio = None #none por causa da tela inicial
+tempo_inicio = int() #none por causa da tela inicial
 limite = 35 * 1000  #35 segundos em milissegundos
 margem_do_mapa = 30 #valor aleatorio so pra colocar no codigo
 
@@ -94,9 +89,8 @@ combinacionais = [("MUX", "assets/sprites/mux.png"), ("DEMUX", "assets/sprites/d
 
 flipflops = [("FlipFlop", "assets/sprites/flipflop.png")]
 
-portas_restantes = []
-combinacionais_restantes = []
-flipflops_restantes = []
+portas_restantes = portas.copy()
+flipflops_restantes = flipflops.copy()
 combinacionais_restantes = [
     ("MUX", "assets/sprites/mux.png"),
     ("MUX", "assets/sprites/mux.png"),
