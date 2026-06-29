@@ -88,7 +88,7 @@ Os dois personagens possuem animações para todas as direções de movimento:
 | 🎵 Gaita de Fole | Adiciona 10 segundos ao tempo               |
 | 📚 APS           | Remove 10 segundos                          |
 | 🍺 Cerveja Alemã | Inverte os controles e aumenta a velocidade |
-
+| 🐱 Gato ruivo    | Remove 10 segundos do tempo                 |
 ---
 
 ## 🗺️ Mapa
