@@ -1,5 +1,4 @@
 import pygame
-import os 
 #META COLETAVEIS
 metas = {
     'meta_portas' : 4,

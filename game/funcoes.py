@@ -1,6 +1,5 @@
 
 import pygame
-import os
 import random
 from random import randint
 from game.constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes,combinacionais_restantes ,metas, flipflops, fonte, portas, boleanas
