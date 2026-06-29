@@ -1,5 +1,5 @@
 import pygame
-from constantes import largura, altura
+from game.constantes import largura, altura
 
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("PC-Hersteller")

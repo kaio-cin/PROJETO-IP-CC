@@ -4,12 +4,12 @@ from sys import exit
 
 pygame.init()
 
-from constantes import *
-from tela import *
+from game.constantes import *
+from game.tela import *
 from game.musicas import *
-from classes import *
-from players import Fred, Stefan
-from funcoes import spawnar_dois_coletaveis, spawnar_easter_eggs, desenhar_game_over, desenhar_tela_inicio, desenhar_vitoria, atualizar_coletaveis_ao_mudar_nivel, ocorreu_colisoes, mostrar_quantidade_coletaveis, reiniciar_jogo
+from game.classes import *
+from game.players import Fred, Stefan
+from game.funcoes import spawnar_dois_coletaveis, spawnar_easter_eggs, desenhar_game_over, desenhar_tela_inicio, desenhar_vitoria, atualizar_coletaveis_ao_mudar_nivel, ocorreu_colisoes, mostrar_quantidade_coletaveis, reiniciar_jogo
 
 easter_eggs_nao_pegos = spawnar_easter_eggs()
 normais_ativos = spawnar_dois_coletaveis(portas_restantes)

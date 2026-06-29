@@ -1,5 +1,5 @@
 import pygame
-from classes import Personagem
+from game.classes import Personagem
 
 Fred = Personagem(
     x=100, y=200,

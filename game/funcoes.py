@@ -3,10 +3,10 @@ import pygame
 import os
 import random
 from random import randint
-from constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes,combinacionais_restantes ,metas, flipflops, fonte, portas, boleanas
-from classes import Coletavel
-from players import Fred, Stefan
-from tela import tela_derrota, tela_inicio, tela_vitoria
+from game.constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes,combinacionais_restantes ,metas, flipflops, fonte, portas, boleanas
+from game.classes import Coletavel
+from game.players import Fred, Stefan
+from game.tela import tela_derrota, tela_inicio, tela_vitoria
 from game.musicas import musica_fundo
 
 
@@ -23,7 +23,7 @@ def posicao_coletavel_aleatoria():
             return x, y
         
 def spawnar_easter_eggs():
-    from constantes import easter_eggs
+    from game.constantes import easter_eggs
     lista_easter_eggs = []
     for tipo, sprite in easter_eggs:
         x, y = posicao_coletavel_aleatoria()
@@ -120,7 +120,7 @@ def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
 
 def atualizar_coletaveis_ao_mudar_nivel(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos):
     global combinacionais_restantes
-    from constantes import boleanas
+    from game.constantes import boleanas
     easter_eggs_nao_pegos[:] = spawnar_easter_eggs()
 
     if not boleanas['nivel1_completo']:

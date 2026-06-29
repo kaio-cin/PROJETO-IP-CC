@@ -1,6 +1,6 @@
 import pygame 
 import os
-from constantes import largura, altura, obstaculos
+from game.constantes import largura, altura, obstaculos
 
 def carregar_animacao(pasta):
     arquivos = sorted(os.listdir(pasta))
