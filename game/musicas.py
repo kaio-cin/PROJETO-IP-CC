@@ -18,7 +18,10 @@ barulho_aps = pygame.mixer.Sound('assets/sons/aps.mp3')
 barulho_aps.set_volume(1) 
 
 barulho_cerveja = pygame.mixer.Sound('assets/sons/cerveja.mp3') 
-barulho_cerveja.set_volume(1) 
+barulho_cerveja.set_volume(1)
+
+barulho_miado = pygame.mixer.Sound('assets/sons/miado.mp3')
+barulho_miado.set_volume(0.9)
 
 som_vitoria = pygame.mixer.Sound('assets/sons/som_vitoria.mp3') 
 som_vitoria.set_volume(1)

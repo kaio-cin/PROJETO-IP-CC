@@ -44,7 +44,7 @@ def spawnar_dois_coletaveis(lista_coletaveis):
 def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
 
     for coletavel in coletaveis_totais_naopegos:
-        from game.musicas import barulho_aps, barulho_cerveja, barulho_fechei, barulho_gag, barulho_gaita
+        from game.musicas import barulho_aps, barulho_cerveja, barulho_fechei, barulho_gag, barulho_gaita, barulho_miado
         
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
@@ -62,6 +62,12 @@ def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
                 personagem.vel_bonus = True
                 personagem.controles_invertidos = True
                 personagem.fim_efeito_cerveja = pygame.time.get_ticks() + 7000 #efeito dura 7 segundos
+
+            elif coletavel.tipo == 'Gato':
+                barulho_miado.play()
+                personagem.vel = personagem.vel_normal - 1.5
+                personagem.vel_penalidade = True
+                personagem.fim_efeito_gato = pygame.time.get_ticks() + 5000  #efeito dura 5 segundos
 
             else:
                 if personagem == Fred: 

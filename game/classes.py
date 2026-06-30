@@ -18,6 +18,8 @@ class Personagem():
         self.vel_normal = vel
         self.vel_bonus = False
         self.fim_efeito_cerveja = 0
+        self.vel_penalidade = False
+        self.fim_efeito_gato = 0
         self.controles_invertidos = False
         #parte da animação de movimento do personagem
         self.animacoes = {
@@ -38,6 +40,10 @@ class Personagem():
             self.vel_bonus = False
             self.controles_invertidos = False
 
+        if self.vel_penalidade and pygame.time.get_ticks() >= self.fim_efeito_gato:
+            self.vel = self.vel_normal
+            self.vel_penalidade = False
+            
         self.movendo = False
 
         if not self.controles_invertidos:
