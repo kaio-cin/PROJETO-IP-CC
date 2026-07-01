@@ -105,6 +105,22 @@ while True:
     pos_cronometro = (largura - 100, 10)
     tela.blit(texto_tempo, pos_cronometro)    #posição x=1350, y=10 (canto superior direito)
 
+    indice_frame_icone = (pygame.time.get_ticks() // 300) % 2  #altera o frame a cada 300ms
+
+    icones_ativos = []
+    if Fred.vel_bonus or Stefan.vel_bonus:          #alguém pegou a cerveja
+        icones_ativos.append(icone_cerveja_frames[indice_frame_icone])
+    if Fred.vel_penalidade or Stefan.vel_penalidade:  #alguém pegou o gato
+        icones_ativos.append(icone_gato_frames[indice_frame_icone])
+
+    pos_y_icone = pos_cronometro[1] + texto_tempo.get_height() + 10
+    for icone in icones_ativos:
+        pos_x_icone = largura - 20 - icone.get_width()  # alinhado à direita, igual o cronômetro
+        tela.blit(icone, (pos_x_icone, pos_y_icone))
+        pos_y_icone += icone.get_height() + 5
+
+    ocorreu_colisoes(Fred, coletaveis_totais_naopegos, normais_ativos)
+
     ocorreu_colisoes(Fred, coletaveis_totais_naopegos, normais_ativos)
     ocorreu_colisoes(Stefan, coletaveis_totais_naopegos, normais_ativos)
 
