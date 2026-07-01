@@ -2,7 +2,7 @@ import pygame
 from game.constantes import largura, altura
 
 tela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("PC-Hersteller")
+pygame.display.set_caption("Hersteller")
 mapa = pygame.image.load('assets/sprites/mapa.png').convert()
 mapa = pygame.transform.scale(mapa, (largura, altura))
 
@@ -15,7 +15,7 @@ tela_derrota = pygame.transform.scale(tela_derrota, (largura, altura))
 tela_inicio = pygame.image.load("assets/sprites/tela_inicio.png").convert()
 tela_inicio = pygame.transform.scale(tela_inicio, (largura, altura))
 
-tamanho_icone_efeito = 40
+tamanho_icone_efeito = 37
 
 def _carregar_icone_efeito(caminho):
     img = pygame.image.load(caminho).convert_alpha()
