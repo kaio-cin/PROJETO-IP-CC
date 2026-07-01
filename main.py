@@ -33,17 +33,16 @@ while True:
             elif (boleanas['game_over'] or boleanas['vitoria']) and event.key == pygame.K_r:
                 reiniciar_jogo(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos)
     
-    if constantes.mensagem_item != "":
-        if pygame.time.get_ticks() - constantes.tempo_mensagem < 2500:
+    constantes.mensagens_ativas[:] = [msg for msg in constantes.mensagens_ativas if pygame.time.get_ticks() < msg['fim']]
 
-            fonte = pygame.font.SysFont(None, 32)
+    fonte_mensagens = pygame.font.SysFont(None, 32)
+    pos_x_mensagens = 10  # um pouco mais pra esquerda
+    pos_y_base_mensagens = 40  # perto do rodapé da tela
 
-            texto = fonte.render(constantes.mensagem_item, True, constantes.cor_mensagem)
-
-            tela.blit(texto, (20,20))
-    
-    else:
-        constantes.mensagem_item = ""
+    for i, msg in enumerate(constantes.mensagens_ativas):
+        texto = fonte_mensagens.render(msg['texto'], True, msg['cor'])
+        # desenha de baixo pra cima: a mais nova fica embaixo, a mais antiga sobe
+        tela.blit(texto, (pos_x_mensagens, pos_y_base_mensagens + i * 30))
 
     if boleanas['tela_inicio']:
         desenhar_tela_inicio(tela)

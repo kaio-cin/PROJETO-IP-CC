@@ -36,9 +36,7 @@ clock = pygame.time.Clock()
 tempo_inicio = int() #none por causa da tela inicial
 limite = 35 * 1000  #35 segundos em milissegundos
 margem_do_mapa = 30 #valor aleatorio so pra colocar no codigo
-mensagem_item = ""
-cor_mensagem = (255, 255, 255)
-tempo_mensagem = 0
+mensagens_ativas = [] 
 
 #COLISOES
 obstaculos = [

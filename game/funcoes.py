@@ -41,6 +41,26 @@ def spawnar_dois_coletaveis(lista_coletaveis):
 
     return lista_coletaveis_escolhidos
 
+def atualizar_mensagem_efeito(personagem_nome, tipo_efeito, texto, cor, duracao_ms):
+    from game import constantes
+    fim = pygame.time.get_ticks() + duracao_ms
+
+    # se já existe uma mensagem ativa pro mesmo personagem/mesmo efeito, só atualiza (reseta a duração)
+    for msg in constantes.mensagens_ativas:
+        if msg['personagem'] == personagem_nome and msg['tipo'] == tipo_efeito:
+            msg['texto'] = texto
+            msg['cor'] = cor
+            msg['fim'] = fim
+            return
+
+    constantes.mensagens_ativas.append({
+        'personagem': personagem_nome,
+        'tipo': tipo_efeito,
+        'texto': texto,
+        'cor': cor,
+        'fim': fim
+    })
+
 def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
     for coletavel in coletaveis_totais_naopegos:
         from game.musicas import barulho_aps, barulho_cerveja, barulho_fechei, barulho_gag, barulho_gaita, barulho_miado
@@ -62,16 +82,15 @@ def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
                 personagem.vel_bonus = True
                 personagem.controles_invertidos = True
                 personagem.fim_efeito_cerveja = pygame.time.get_ticks() + 7000 #efeito dura 7 segundos
-                constantes.mensagem_item = f"{personagem.nome}: +1.5 velocidade"
-                constantes.tempo_mensagem = pygame.time.get_ticks()
+                atualizar_mensagem_efeito(personagem.nome, 'cerveja', f"{personagem.nome}: +1.5 velocidade", (255,255,255), 7000)
+
 
             elif coletavel.tipo == 'Gato':
                 barulho_miado.play()
                 personagem.vel = personagem.vel_normal - 1.5
                 personagem.vel_penalidade = True
                 personagem.fim_efeito_gato = pygame.time.get_ticks() + 5000  #efeito dura 5 segundos
-                constantes.mensagem_item = f"{personagem.nome}: -1.5 velocidade"
-                constantes.tempo_mensagem = pygame.time.get_ticks()
+                atualizar_mensagem_efeito(personagem.nome, 'gato', f"{personagem.nome}: -1.5 velocidade", (255,255,255), 5000)
 
             else:
                 if personagem == Fred: 
