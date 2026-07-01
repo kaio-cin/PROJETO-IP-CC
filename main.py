@@ -10,6 +10,7 @@ from game.musicas import *
 from game.classes import *
 from game.players import Fred, Stefan
 from game.funcoes import spawnar_dois_coletaveis, spawnar_easter_eggs, desenhar_game_over, desenhar_tela_inicio, desenhar_vitoria, atualizar_coletaveis_ao_mudar_nivel, ocorreu_colisoes, mostrar_quantidade_coletaveis, reiniciar_jogo
+from game import constantes
 
 easter_eggs_nao_pegos = spawnar_easter_eggs()
 normais_ativos = spawnar_dois_coletaveis(portas_restantes)
@@ -32,6 +33,18 @@ while True:
             elif (boleanas['game_over'] or boleanas['vitoria']) and event.key == pygame.K_r:
                 reiniciar_jogo(coletaveis_totais_naopegos, normais_ativos, easter_eggs_nao_pegos)
     
+    if constantes.mensagem_item != "":
+        if pygame.time.get_ticks() - constantes.tempo_mensagem < 2500:
+
+            fonte = pygame.font.SysFont(None, 32)
+
+            texto = fonte.render(constantes.mensagem_item, True, constantes.cor_mensagem)
+
+            tela.blit(texto, (20,20))
+    
+    else:
+        constantes.mensagem_item = ""
+
     if boleanas['tela_inicio']:
         desenhar_tela_inicio(tela)
         pygame.display.update()

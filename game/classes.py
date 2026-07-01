@@ -8,7 +8,8 @@ def carregar_animacao(pasta):
     return [pygame.image.load(os.path.join(pasta, arq)).convert_alpha() for arq in arquivos]
 
 class Personagem():
-    def __init__(self, x, y, vel, teclas, pasta_animacoes):
+    def __init__(self, nome, x, y, vel, teclas, pasta_animacoes):
+        self.nome = nome
         self.rect = pygame.Rect(x, y, 48, 64)
         self.vel = vel
         self.cima = teclas['cima']

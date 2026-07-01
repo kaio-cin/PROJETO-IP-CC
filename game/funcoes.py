@@ -2,10 +2,10 @@
 import pygame
 import random
 from random import randint
-from game.constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes,combinacionais_restantes ,metas, flipflops, fonte, portas, boleanas
+from game.constantes import altura, largura, margem_do_mapa, obstaculos, inventario, portas_restantes,combinacionais_restantes, metas, flipflops, fonte, portas, boleanas
 from game.classes import Coletavel
 from game.players import Fred, Stefan
-from game.tela import tela_derrota, tela_inicio, tela_vitoria
+from game.tela import tela_derrota, tela_inicio, tela_vitoria, tela
 from game.musicas import musica_fundo
 
 
@@ -42,10 +42,10 @@ def spawnar_dois_coletaveis(lista_coletaveis):
     return lista_coletaveis_escolhidos
 
 def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
-
     for coletavel in coletaveis_totais_naopegos:
         from game.musicas import barulho_aps, barulho_cerveja, barulho_fechei, barulho_gag, barulho_gaita, barulho_miado
-        
+        from game import constantes
+
         if coletavel.naopego and personagem.rect.colliderect(coletavel.rect):
             coletavel.naopego = False
             
@@ -62,12 +62,16 @@ def ocorreu_colisoes(personagem, coletaveis_totais_naopegos, normais_ativos):
                 personagem.vel_bonus = True
                 personagem.controles_invertidos = True
                 personagem.fim_efeito_cerveja = pygame.time.get_ticks() + 7000 #efeito dura 7 segundos
+                constantes.mensagem_item = f"{personagem.nome}: +1.5 velocidade"
+                constantes.tempo_mensagem = pygame.time.get_ticks()
 
             elif coletavel.tipo == 'Gato':
                 barulho_miado.play()
                 personagem.vel = personagem.vel_normal - 1.5
                 personagem.vel_penalidade = True
                 personagem.fim_efeito_gato = pygame.time.get_ticks() + 5000  #efeito dura 5 segundos
+                constantes.mensagem_item = f"{personagem.nome}: -1.5 velocidade"
+                constantes.tempo_mensagem = pygame.time.get_ticks()
 
             else:
                 if personagem == Fred: 
