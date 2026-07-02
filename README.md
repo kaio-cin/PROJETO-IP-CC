@@ -276,6 +276,16 @@ Principais aprendizados:
 
 ---
 
+## 💻 Prints das Telas do Jogo
+
+![Tela inicial](/assets/sprites/tela_inicio.png)
+
+![Tela de vitória](/assets/sprites/tela_vitoria.png)
+
+![Tela de derrota](/assets/sprites/tela_derrota.png)
+
+---
+
 ## 🏫 Informações Acadêmicas
 
 **Universidade Federal de Pernambuco (UFPE)**
