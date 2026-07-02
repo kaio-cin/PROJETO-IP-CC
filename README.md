@@ -135,6 +135,7 @@ Características visuais:
 
 | Evento                  | Áudio                    |
 | ----------------------- | ------------------------ |
+| Música de Fundo         | Nena - 99 Luftballons    |
 | Coleta da Gaita de Fole | Som de gaita de fole     |
 | Coleta da Cerveja Alemã | Música "A Praieira"      |
 | Coleta da APS           | Fail Sound Effect (SFX)  |
