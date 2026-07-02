@@ -77,7 +77,7 @@ Os dois personagens possuem animações para todas as direções de movimento:
 
 ### Dispositivos Sequenciais
 
-* Flip-Flops (3 unidades)
+* Flip-Flops
 
 ---
 
@@ -138,7 +138,10 @@ Características visuais:
 | Coleta da Gaita de Fole | Som de gaita de fole     |
 | Coleta da Cerveja Alemã | Música "A Praieira"      |
 | Coleta da APS           | Fail Sound Effect (SFX)  |
+| Coleta do Gato ruivo    | Som de um miado          |
+| Vitória                 | Efeito sonoro de vitória |
 | Derrota                 | Efeito sonoro de derrota |
+
 
 ---
 
